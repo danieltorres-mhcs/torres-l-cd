@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koobits Cracker</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    font-family:system-ui,sans-serif;
+}
+
+body{
+    margin:24px;
+    height:100vh;
+    overflow:hidden;
+    background:#f3f3f3;
+    background-size:80px 80px;
+    transition:.25s;
+}
+h1{
+    margin:0 0 18px;
+    text-align:center;
+}
+
+#link{
+    display:block;
+    text-align:center;
+    margin-bottom:20px;
+    word-break:break-all;
+    color:#1565c0;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+#link.disabled{
+    color:#888;
+    pointer-events:none;
+}
+#info{
+    margin:12px 0 20px;
+    font-size:14px;
+    opacity:.8;
+    text-align:center;
+}
+#thumbnailLabel{
+    margin:12px 0 8px;
+    font-weight:600;
+    text-align:center;
+}
+
+#thumbnail{
+    width:220px;
+    max-width:100%;
+    display:none;
+    margin:0 auto 18px;
+}
+
+#thumbnail:not(.hidden){
+    display:block;
+    padding:10px;
+    background:rgba(255,255,255,.15);
+    border-radius:12px;
+}
+
+.hidden{
+    display:none;
+}
+label{
+    display:block;
+    margin:14px 0 6px;
+    font-weight:600;
+}
+
+select{
+    width:100%;
+    padding:12px 42px 12px 12px;
+    border-radius:10px;
+    border:1px solid #bbb;
+    font-size:16px;
+    color:inherit;
+    background-color:transparent;
+    appearance:none;
+    -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 12px center;
+    background-size:16px;
+}
+
+@media (orientation: landscape){
+    label{
+        text-align:center;
+    }
+    select{
+        display:block;
+        width:min(100%, 360px);
+        margin-left:auto;
+        margin-right:auto;
+    }
+}
+.credit-link {
+    color: #333;
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+<p><br></p>
+<h1>Koobit Cracker</h1>
+
+<a id="link" class="disabled" target="_blank">
+Select a type and game
+</a>
+
+<label>Type</label>
+
+<select id="type">
+<option value="">Choose...</option>
+<option value="memory">Memory</option>
+<option value="flexibility">Flexibility</option>
+<option value="speed">Speed</option>
+<option value="attention">Attention</option>
+<option value="problemsolving">Problem Solving</option>
+<option value="adventure">Adventure</option>
+</select>
+
+<label>Game</label>
+
+<select id="game">
+<option value="">Choose a type first...</option>
+</select>
+
+<p id="thumbnailLabel" class="hidden">Game Thumbnail:</p>
+<img id="thumbnail" class="hidden" alt="Game thumbnail">
+
+<p id="info">
+Click the link above or click the game thumbnail to open the selected game in another tab.<br>Port from <a href="danieltorres.github.io/koobitcracker">the github.io site</a>
+<br>
+Credits: <link><a href="https://github.com/danieltorres-mhcs" class="credit-link">@daniel-torres on Github</a>
+</link>
+<script>
+const backgrounds={
+default: "https://raw.githubusercontent.com/danieltorres-mhcs/assets/refs/heads/main/IMG_1415.jpg",
+memory:"data:image/gif;base64,R0lGODlhUABQAPMAAA6x5gCk2ASn3BO26gGk2Qap3RG06Qqu4gGl2QWo3QSo3Aqt4gap3hO26wCj2BS37CH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjMyMjI0NjkxMzc1MkU3MTE4NUI0RjZEOEIwNjlGQUFFIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkE5NTc5NTI5RTZDMTExRTdBRTEyREEwQkM1NkNFQUM5IiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkE5NTc5NTI4RTZDMTExRTdBRTEyREEwQkM1NkNFQUM5IiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOmM4NzY1YTE4LTg0YjYtODU0ZS05YTQ3LTg3OWNlZGUyOTM0MiIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjI3YzJmNDY4LWExYTYtMTFlNy1hYzgwLWUyMTUzOWZiN2IxYSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACwAAAAAUABQAAAE//DJSau9djTMu+faJ4XeEhCA+JAf2x0Bknqw3A2B4yhiPb+xH6aRcwg8RN2R0yDoGJ+kEVlcMp2OAhKr7QAEBUOUu9V1vYKE2PNVq1TtNdr9rtvv+Lx+z+/7/youNxsigiCELYhANjRBHz6Pjo2MTFVUSpdTHVJWQ5abZKBmZVmkZ0Ohc3IccR+tbGmrGK+Atba3uLm6uoYYvRe/GYqDPZKLQhiQk8gXypWYm5/PmtOdF5ym2aKl26fXqayxruKwdKrj5rvq6+zt7u7BFfEU8xP1I8PJxhzO/Pv6lPwFvCbNE7RqmaxZwNZN25VRDSOeKyfrAq1w6WaRe8exo8ePvP/y+RIJjKSwQCYp9APIzMLKZv9gDlxYkOBBg9RwKqzA8CE3n94WgvsGESi6ihYuasxocSNGpCCjSp1KFc+9FSnpZbW3FV+xmS5jhgVb4eXYlhR66kzINtpNoj9RFZUbF25QnkObMk3qdClUCkr1/q1KuLDhW1cTd8WK8italWLLRoZMlvJjCWpt5tS8M21Nmm+FzrXrkO7dtHn57q0QWPVgCa1Z9z1Mu7btXYobF1p8z6zkyhN8W44E/EFm0JuRd55wnOdnvKNF15V+mnlq1NFdH91Okfvt7+DtXA2pu4MJFOU99J4cnD0OHTyIX5YgHPNzz6GxO4DSFqFE07CEMUY6dvpVN0FsgM22B4IHKhjegxBGqFV6xOxGIUvyZbiMhv51uJZbyTmXX4GlkfafiROl+JR3K0ro4i0RAAA7",
+flexibility:"data:image/gif;base64,R0lGODlhUABQAPMAAItn13xYyHlVxYpm1oZi0YJezoZi0n1ayYll1H1ZyYtn1n5ayYll1XhUxIxo1wAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjMyMjI0NjkxMzc1MkU3MTE4NUI0RjZEOEIwNjlGQUFFIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjlGOTlGOUE0RTZDNDExRTdCRjU2OEY0OUVBNTc3ODBGIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjlGOTlGOUEzRTZDNDExRTdCRjU2OEY0OUVBNTc3ODBGIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjVhMDRiODQzLTE2ZDUtYTk0ZC1iMTA3LWNiMjZiMzJmM2NiZiIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjY2Y2ZkYzljLWU2YzQtMTFlNy04Zjk1LTk3YzczOGYyOTEwMiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACwAAAAAUABQAAAE/9DJSau9dgDMu+faJ4Ve0QiG6JAf25noB6dgYwfiLJ80p9gNXOd36wAEtsWHGPQwhZyj7eCRNqgdQuDA+FixUeT1o00gyAGzSlU+e9rruHxOr9vv+Lx+v3Z1/CAbIoAYhBY6JTw7MYmML4pDQFAYT06SlkWRmWFTVWJgGF+enUafaGpvaW5ZqqerHHB8srO0tba3uIYZgi28HroVwBOIj44cxMeQxT2Ul5pNz5MXldGjY6WknNfaoBeiqais4bCt4K8Ysbjq6+zt7u/CE/Ejvn/1gTnKycYYyP36//hZoObDWcFNzRBOMxjKFLZtDbNFhOjNobhzF9KRG4eu3MV3IP9Dihypbt6Ke4VQXjA5z98Fl4cAvpQZU2AFggmhHdSZU9pAhhUlBqVo4Rs3a90yetyI0YLGjhyVRiVJtarVq3VYqtylQms+mxVghqU5FiwFsRNwLlT4k+1NoG15Dk1awehEuhTsznXF11zfj1gDCx7czuugrcEQU2hJ9mzjYY8loIVsVoLauD7fuqVwWbPcohbvIh39EC+Fp1KbVkDtdClU1YRjy55dy3Cvrorl5XYwWXJk3r97A6/soDNnuJ4zH9+cFnne0HtLkz7qtzrg60xpa99Ox+Qt2/uY2cP9VfzMygOclzVfk/3yz8kfKsEE/73yCXpBC23NxQt0/US1NtVJaq7hwRqBA3Kn4IIM6kbeYQ/etoh7jhE3HIWUYegbccY1x5xl6oH4YXEhOpBfXf+huJ+KAT63IoKwTXDgaQUKGKMEMzao4x0RAAA7",
+speed:"data:image/gif;base64,R0lGODlhUABQAPMAAN9ycO6Bf9xvbel8euBzce2AfuV4dut/fe2Bf+x/feB0cttubO6CgAAAAAAAAAAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjMyMjI0NjkxMzc1MkU3MTE4NUI0RjZEOEIwNjlGQUFFIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjU1NURFNjIyRTZDNTExRTdCMEY3QjcwMzhEMzMyMjA1IiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjU1NURFNjIxRTZDNTExRTdCMEY3QjcwMzhEMzMyMjA1IiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjYwNjM5MDQzLWFmOGQtZDY0Ni04ODg4LTQ2NzkwOGQzODgzYyIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjY2Y2ZkYzljLWU2YzQtMTFlNy04Zjk1LTk3YzczOGYyOTEwMiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACwAAAAAUABQAAAE/5DJSau9tgTMu+faJ4WesQiDyJAf25noB6fgYgPiLJ80h9gLXOd36wQENsWHGPQwhZyjjeCRLqidAYCQ+FixUeT1oyUcyNuzSlRWZ9PruHxOr9vv+Lx+v3Z1/CAbIoAYhBY6JTw7MYmML4pDQFAYT06SlkWRmWFTVWJgGF+enUafaGanbhxtqa18r7CxsrO0tYYZgi25HrcVvROIj44cwcSQwj2Ul5pNzJMXlc6jY6WknNTXoBeiHqzdcN+o4aoY3rXn6Onq6+y/E+4ju3/ygTnHxsMYxfr3/PkW0XwsE7hJWUFoA0OZqoZNoTWHDbctfCOOIrkL5laBs8iuo8ePIP/PwVtBr1DJCyPh7buw8lA/li9d/qsQ0GAzgjdtPgOYUOJDnxEtcMs2TRvGjRorJr1oIWM5pCGjSp1K9U7Kk7hUXLU3s0JLrzHBdqXwdUJNhAd5pqXZU21OoEYrDIUYl8JcuK44jsu7tKrfv4DXbR2E1VdhCirDklUMjLGEso3HSjjrdifbtRQoX34rdCLdoqAZ1qXg9KjSp6dNM61QOrDr17BpDdal9fA72wwgP3acm7fu3pIZaM7cdrNl4pjNFrfrGa/o0ET3StdLvW/s69jnjJSNm+SiZPNqcwUPU3KB5WLJy1SPnLNxhkowuW9/fMLdzj+bbukC/fN063u0xhpCVNkVaOCBWREmnoIMNsLeYsEB92BkE+4W3HDKJTcZehtqKByHDNwnV3P4BTVifieaOGBq+rG44mqkEdgijAjWeEcEADs=",
+attention:"data:image/gif;base64,R0lGODlhUABQAPQAAFyS7kmA202D31eN6UqB3FuS7U6F4FqQ61yS7U6E4FOK5UqA3FeO6VqQ7E+F4FOJ5U2E30l/212T7gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjMyMjI0NjkxMzc1MkU3MTE4NUI0RjZEOEIwNjlGQUFFIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjA2NzcxN0U2RTZDNTExRTdBNzUwRjdFMEE2MzBCMjFCIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjA2NzcxN0U1RTZDNTExRTdBNzUwRjdFMEE2MzBCMjFCIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjVhMDRiODQzLTE2ZDUtYTk0ZC1iMTA3LWNiMjZiMzJmM2NiZiIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjY2Y2ZkYzljLWU2YzQtMTFlNy04Zjk1LTk3YzczOGYyOTEwMiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACwAAAAAUABQAAAF/6AkjmRpnmYBoGzrsuorxu4TLIws0S/fKgHC4AUUtgqBSAQiKw5dThciGRFIqVYWYKF0vKbKLAtcdQEISoMZHVG3BgJD43VOr+0ueOLw0vN1Mn59AnuAhoeIiYqLjI2Oj5CAPkcrMpMwlT2ZP0FPnEZQnUSioaBjWFdhqWUtZGIorndtsm5abLUodbMturgognmEf2/Cg4XBx5HKy8zNzs/PlyjSJ9Qpm5RNpJ+eLFGl3Sjfp6qtqObl5Kzqrye9tPC8t/HEySzA9cP3xcj60P8AAwocKNBaCYMkEI5QOAObuG3eID40FZHixHAmYqFbB+scu1XtTLyTh8dWyVzzSP/uymfM3wl8++z94kewps2bOKM5nLazWs9rOhiOq4jRxNCLoyxm9NgxXVOOJzR+VOlLZEqTK1GedHc1pksTMGfKfEnTa86zaNOqhcRwx8+DbxPGXThXwtETd41KxLtXr9ISUp+GBMw0auGlTrlutbq4xEisVR13Ffu1RFiyY8GWpby2s+fPA9uKrus2aN28JVCTUD2CtQjXgQ0nRgyV9mASsRlnVbxbd2QSj7X21pzZ8mbMlUlcJp4ctPPn0JmNNk3d0um+qbGv1t6a+2vvuQnPFl+b/O0R4YFP9k1P+O8RwTn3a0l/fvT7+BG11Vm9hQ0c/bkglHd2cYeEEkwkVVRLdn/hdph5vHARgRcgVUhVe2TJQcd6kjVmXHHKHcfIch82l9+JKKZYmnUBZsOigjCCEyM3Fk5lo2A1uochexf2yJJ9PwZplopEMhMCADs=",
+problemsolving:"data:image/gif;base64,R0lGODlhUABQAPQAACO7oie+pinApyS7ozbNtTTLsjHIryi/pjHIsCS8oy3FrDHJsCe/pi3ErDbNtCO6ojfOtQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjMyMjI0NjkxMzc1MkU3MTE4NUI0RjZEOEIwNjlGQUFFIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjI2MzFFQTkzRTZDNTExRTc5NkEyQjM0MzVDN0RCNDk5IiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjI2MzFFQTkyRTZDNTExRTc5NkEyQjM0MzVDN0RCNDk5IiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjYwNjM5MDQzLWFmOGQtZDY0Ni04ODg4LTQ2NzkwOGQzODgzYyIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjY2Y2ZkYzljLWU2YzQtMTFlNy04Zjk1LTk3YzczOGYyOTEwMiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACwAAAAAUABQAAAF/yAkjmRpnqZDoGzrsuorxm4DDIsM0S/fKoAE4gUUthyAx4MhKw5dThdSGZAmH1XYQCnoXbOwr3T76B7JZpYhICj00GPua31wu+h23TxQ3/f1gIGCg4SFhoeIiYo6PkcrMo0wjz2TP0FPlkZQl0Scm5phVFaiR2KlpKFYcWWraSgOcGdysqx3fHlqt364KHi7i8DBwsPExcY7lY6MyZLLTZ6ZmCxRn9Io1Klgr6bZo6qn31qz4rXkriew46+xLb62f+2677wn7sf3+Pn6+8aRr8z/nEECaALbNGgHQSW0dsIgOm7bUEUMN1HbQ4no2K1Tl5FjCo0dy+WCN5KeCXslf//xW8mypctg/tARTDGzREyazxReQ7hTZ0OeP33ahHiRYlGLKYgmxfjRo02QTUWGPBeV6kl58Uj2wppy3suvYMOKLXTTZk0SZdGeHZFWhMOgDAsClSu0xNuhTPEaXbpXL1K/rQLTsooW6lOnJVBu1VqP62KTiR2PnUy5srC2M9ZmFkgpZ1y7c0HXJXFX9Ge2SgGD+4s2deu8hRGzNRxbalXBWSGTUNyY8VXfkYFbHk68+CLMyDhL0Zy80+gRpUmHlv7c7fQZrlHD1t73dXfurGfLnkFbvO3D52sT3i35t+4RvN2rNE6/vnKWyNvawHG/mfPT0F03xRKe/edNeNhtt0NCeeAdiNtG6cHHxnvkjbeghRDEFxyFgWjInnD2hShiiPkxV2J/cBlYjYrROLiai928ONiDU9F4m1c45jZfVyP2GEwIADs=",
+adventure:"data:image/gif;base64,R0lGODlhUABQAPMAADuhSSmPNyySOjacRC2UOzKYQDqhSDifRi2TOzuhSDqgSDmfRyiONjyiSQAAAAAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjMyMjI0NjkxMzc1MkU3MTE4NUI0RjZEOEIwNjlGQUFFIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkUzOUQ3NThCRTZDNDExRTc4RTA3RDQ3RERGNDhGMDZGIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkUzOUQ3NThBRTZDNDExRTc4RTA3RDQ3RERGNDhGMDZGIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjVhMDRiODQzLTE2ZDUtYTk0ZC1iMTA3LWNiMjZiMzJmM2NiZiIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjY2Y2ZkYzljLWU2YzQtMTFlNy04Zjk1LTk3YzczOGYyOTEwMiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACwAAAAAUABQAAAE/7DJSau9VgHMu+fG9jXhVzDBMJLiV5qo6p1ppzC4MNJyx3sJHEPXCeY6gACO8DEOgUIiJ7n0UBnMzkBAWHyu2akS+9kiDmXBebUyoz1utnxOr9vv+Lx+z2e/XC0ef4KBHYMcPzMxMDWKjT6LRVFQR5KVHE5SGJlWY2EYYJ1VSJ6iZHBqb1qpaWuorquwfbO0tba3uLeHIIW8K7sYwBaJkI+IkcU9x8YXnJZPz5rNk9GmnxehpKNi26Clr6occeCt4Rjjuenq6+zt7sIW8BXyFPQT9g3Ey8oY+v3I+yhBw0SN4KVNBREexPaN2ymH1yxkg1iuIrmLscy528ixo8da+P9Y/OoVjOQFfP4upBwG8B8zlS0tODM4UGHNaQtlJmTYjedDbz0lNgT68xwrjOKOZrT4sanTp1D1hJxqMl7VeVcnrKywlUJXrTFZvqww06Y0nTnJ7kR7U2jQChOJRoQ71OfcCuiSyjK690JevhqjCh5MGBfVkYhHoAzLlbFXx2DHNpY8oSzOtmrTUrDM9izdtxTi2rVGGilgpnoD41VauLXr1+oOK856j7aExZQj84OZW8JX35AbcM6MefNa4p6Na54g2m1R53eZ14WO+rRpv6ytw97OfY4Gp7KTJQa0I3g+yDeWP+59vvdw5cUlNO8sMLl00Pefr+7yZfpn/av1ZcFJX3kQOGB23SWo4IJWjUeIg4bY9lt7u4lV4WQXrpehBO9Vdhx89nH4oYfqNTBfaP6hiJ98KeYX3QQGBqgaBTHSiOCBAjKoox4RAAA7"
+};
+// Oh my god bro I just got an idea but i dont want repaste these gigantic links
+// Oh wait.
+const colors = {
+    default: {
+        text: "#000",
+// Can't do links here
+        hint: "#474747"
+    },
+    memory: {
+        text: "#fff",
+        link: "#012F7B",
+        hint: "#004D65"
+    },
+    flexibility: {
+        text: "#fff",
+        link: "#450D59",
+        hint: "#2E063D"
+    },
+    speed: {
+        text: "#000",
+        link: "#701D00",
+        hint: "#831100"
+    },
+    attention: {
+        text: "#fff",
+        link: "#000B54",
+        hint: "#012F7B"
+    },
+    problemsolving: {
+        text: "#fff",
+        link: "#005B44",
+        hint: "#004545"
+    },
+    adventure: {
+        text: "#fff",
+        link: "#ff9800",
+        hint: "#002F00"
+    }
+};
+const categories={
+
+memory:{
+prefix:"mg",
+games:{
+"Animals Memory":"memorygame2",
+"Even Odd":"evenodd",
+"Flash Memory":"flashmemory",
+"Memory Game":"memorygame",
+"Memory Order":"memoryorder",
+"Sequence":"sequence",
+"What's Inside?":"whatisinside"
+}
+},
+
+flexibility:{
+prefix:"fl",
+games:{
+"Brick Out":"brickout",
+"Earth Attack":"earthattack",
+"Fishing Frenzy":"fishingfrenzy",
+"Gold Miner":"goldminer",
+"Mad Shark":"madshark",
+"Monster Truck":"monstertruck",
+"Numbers Castle":"mathpluspuzzle",
+"Snakes and Blocks":"snakeblocks"
+}
+},
+
+speed:{
+prefix:"sp",
+games:{
+"Brain Speed":"brainspeed",
+"Defense Maths":"defensemaths",
+"Maths Balls Game":"mathballsgame",
+"Math Pop Game":"mathspop",
+"Maths Speed":"mathsspeed",
+"Solve Maths":"solvemathsv2",
+"Sushi Maths":"sushimathsv2",
+"True Number":"truenumber"
+}
+},
+
+attention:{
+prefix:"at",
+games:{
+"Cube Ninja":"cubeninja",
+"Duck Shoot":"duckshoot",
+"Flapcat":"flipcat",
+"Fruit Slasher":"fruitslasher",
+"Speed Racer":"spaceracer",
+"Space Shoot":"spaceshoot",
+"T-Rex Runner":"trexrunner",
+"Tank Defender":"tankdefender"
+}
+},
+
+problemsolving:{
+prefix:"ps",
+games:{
+"Battleship War":"battleshipwar",
+"Fish World Match":"fishworldmatch",
+"JellyMatch":"jellymatch",
+"Playful Kitty":"playfulkitty",
+"Plumber":"plumber",
+"Swift Cats":"swiftcats",
+"Tetris Cube":"tetriscube",
+"Ultimate Sudoku":"ultimatesudoku",
+"Virus Attack":"virusattack"
+}
+},
+
+adventure:{
+prefix:"ad",
+games:{
+"Battle Battle":"battlebattle",
+"Flash Adventure":"flashadventure",
+"Indiara and Skull Gold":"indiara",
+"Pirates Adventure":"pirates",
+"Princess Goldblade":"princessgoldblade",
+"Snowball World":"snowballworld",
+"Stick Monkey":"stickmonkey"
+}
+}
+
+};
+
+const type=document.getElementById("type");
+const game=document.getElementById("game");
+const link=document.getElementById("link");
+const thumbnail = document.getElementById("thumbnail");
+const thumbnailLabel = document.getElementById("thumbnailLabel");
+function updateGames(){
+
+game.innerHTML="<option value=''>Choose...</option>";
+
+const t=type.value;
+const c = colors[t || "default"];
+
+document.body.style.backgroundImage = `url(${backgrounds[t || "default"]})`;
+document.body.style.color = c.text;
+link.style.color = link.classList.contains("disabled") ? c.hint : c.link;
+
+if(!t){
+document.body.style.backgroundImage = `url(${backgrounds.default})`;
+updateLink();
+return;
+}
+
+for(const [name,id] of Object.entries(categories[t].games)){
+const option=document.createElement("option");
+option.textContent=name;
+option.value=id;
+game.appendChild(option);
+}
+
+document.body.style.backgroundImage=`url(${backgrounds[t]||""})`;
+
+updateLink();
+
+}
+
+function updateLink() {
+thumbnail.classList.add("hidden");
+thumbnailLabel.classList.add("hidden");
+thumbnail.removeAttribute("src");
+    const t = type.value;
+    const g = game.value;
+    const c = colors[t || "default"];
+
+if (!t || !g) {
+    link.textContent = "Select a type and game";
+    link.removeAttribute("href");
+    link.classList.add("disabled");
+    link.style.color = c.hint;
+
+    thumbnail.classList.add("hidden");
+    thumbnailLabel.classList.add("hidden");
+    thumbnail.addEventListener("click", () => {
+    if (link.href) {
+        window.open(link.href, "_blank");
+    }
+});
+    return;
+}
+
+const url = `https://braingames.koobits.com/brain_games/${categories[t].prefix}${g}`;
+
+link.textContent = url;
+link.href = url;
+link.classList.remove("disabled");
+link.style.color = c.link;
+
+thumbnail.src = `https://braingames.koobits.com/thumbnails/${categories[t].prefix}${g}.png`;
+
+thumbnail.classList.remove("hidden");
+thumbnailLabel.classList.remove("hidden");
+}
+type.addEventListener("change",updateGames);
+game.addEventListener("change",updateLink);
+document.body.style.backgroundImage = `url(${backgrounds.default})`;
+
+updateGames();
+</script>
+
+</body>
+</html>\n
