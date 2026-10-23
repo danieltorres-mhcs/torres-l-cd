@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lI Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="/faviconli-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/faviconli-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/faviconli-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/faviconli-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/faviconli-512x512.png">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --atom-bg: #282c34;
+      --atom-panel: #21252b;
+      --atom-tab: #21252b;
+      --atom-tab-active: #282c34;
+      --atom-border: #181a1f;
+      --atom-text: #abb2bf;
+      --atom-muted: #5c6370;
+      --atom-blue: #61afef;
+      --atom-green: #98c379;
+      --atom-orange: #d19a66;
+      --atom-red: #e06c75;
+      --atom-purple: #c678dd;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--atom-bg);
+      color: var(--atom-text);
+      font: 13px/1.5 "Segoe UI", Tahoma, sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .titlebar {
+      height: 34px;
+      flex: 0 0 34px;
+      background: #21252b;
+      border-bottom: 1px solid #181a1f;
+      display: flex;
+      align-items: center;
+      padding: 0 13px;
+      gap: 9px;
+      color: #d7dae0;
+      user-select: none;
+    }
+
+    .brand-logo {
+      width: 23px;
+      height: 23px;
+      object-fit: contain;
+      display: inline-block;
+      border-radius: 4px;
+      flex: 0 0 auto;
+    }
+
+    re-icon { vertical-align: -3px; margin-right: 6px; flex: 0 0 auto; }
+
+    .app-name { font-weight: 600; letter-spacing: .2px; }
+    .title-spacer { flex: 1; }
+    .title-hint { color: #777f8d; font-size: 11px; }
+
+    .toolbar {
+      min-height: 43px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 12px;
+      background: #282c34;
+      border-bottom: 1px solid #181a1f;
+      flex-wrap: wrap;
+    }
+
+    button, .file-label {
+      font: inherit;
+      color: #c8ccd4;
+      background: #353b45;
+      border: 1px solid #181a1f;
+      border-radius: 3px;
+      padding: 5px 10px;
+      cursor: pointer;
+      box-shadow: inset 0 1px rgba(255,255,255,.035);
+    }
+
+    button:hover, .file-label:hover { background: #414854; }
+    button:active { background: #252a31; }
+    button.primary {
+      color: #eaf5ff;
+      background: #365d7d;
+      border-color: #27465f;
+    }
+    button.primary:hover { background: #416d91; }
+    button:disabled { opacity: .45; cursor: default; }
+    input[type=file] { display: none; }
+
+    .toolbar-spacer { flex: 1; }
+    .status-pill {
+      color: #9da5b4;
+      border: 1px solid #3a404a;
+      border-radius: 3px;
+      padding: 3px 7px;
+      font-size: 11px;
+    }
+
+    .workspace {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 1px;
+      background: #181a1f;
+    }
+
+    .pane {
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--atom-bg);
+    }
+
+    .tabbar {
+      height: 34px;
+      flex: 0 0 34px;
+      display: flex;
+      align-items: stretch;
+      background: var(--atom-tab);
+      border-bottom: 1px solid #181a1f;
+    }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 13px;
+      background: var(--atom-tab-active);
+      border-top: 1px solid var(--atom-blue);
+      border-right: 1px solid #181a1f;
+      color: #d7dae0;
+    }
+
+    .file-dot {
+      width: 7px;
+      height: 7px;
+      display: inline-block;
+      border-radius: 50%;
+      background: var(--atom-green);
+    }
+
+    .pane-label {
+      margin-left: auto;
+      align-self: center;
+      padding-right: 11px;
+      color: #68707e;
+      font-size: 11px;
+    }
+
+    .editor-wrap {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gutter {
+      width: 43px;
+      flex: 0 0 43px;
+      padding: 12px 9px 12px 0;
+      text-align: right;
+      white-space: pre;
+      overflow: hidden;
+      color: #59616e;
+      background: #282c34;
+      border-right: 1px solid #242830;
+      font: 13px/1.65 Consolas, "Courier New", monospace;
+      user-select: none;
+    }
+
+    textarea, pre.code-view {
+      margin: 0;
+      border: 0;
+      outline: 0;
+      border-radius: 0;
+      resize: none;
+      width: 100%;
+      min-width: 0;
+      flex: 1;
+      padding: 12px 14px;
+      background: var(--atom-bg);
+      color: #abb2bf;
+      font: 13px/1.65 Consolas, "Courier New", monospace;
+      tab-size: 2;
+      white-space: pre;
+      overflow: auto;
+    }
+
+    textarea::selection { background: #3e4451; }
+    textarea:focus { box-shadow: inset 0 0 0 1px #303641; }
+    pre.code-view { overflow-wrap: anywhere; white-space: pre-wrap; }
+    .placeholder { color: #626a78; }
+
+    .console {
+      height: 150px;
+      flex: 0 0 150px;
+      display: flex;
+      flex-direction: column;
+      background: #21252b;
+      border-top: 1px solid #181a1f;
+    }
+
+    .console-head {
+      height: 31px;
+      flex: 0 0 31px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 12px;
+      border-bottom: 1px solid #181a1f;
+      color: #9da5b4;
+    }
+
+    .console-tab {
+      height: 31px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--atom-orange);
+      color: #d7dae0;
+    }
+
+    .console-output {
+      flex: 1;
+      overflow: auto;
+      padding: 8px 12px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font: 12px/1.55 "JetBrains Mono", Menlo, Monaco, "Courier New", monospace;
+      color: #abb2bf;
+    }
+
+    #clearConsoleBtn { padding: 6px 12px; margin: 3px 0 3px auto; line-height: 1.35; }
+    .console-output .error { color: var(--atom-red); }
+    .console-output .success { color: var(--atom-green); }
+    .console-output .muted { color: #6b7380; }
+
+    .footer {
+      height: 23px;
+      flex: 0 0 23px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 10px;
+      background: #21252b;
+      border-top: 1px solid #181a1f;
+      color: #858d9b;
+      font-size: 11px;
+    }
+    .footer .left { flex: 1; }
+    .footer .accent { color: var(--atom-blue); }
+
+    @media (max-width: 760px) {
+      .workspace { grid-template-columns: 1fr; grid-template-rows: minmax(230px, 1fr) minmax(230px, 1fr); }
+      .console { height: 125px; flex-basis: 125px; }
+      .title-hint { display: none; }
+    }
+  
+    /* Responsive compatibility improvements */
+    * { box-sizing: border-box; }
+    html, body { min-width: 0; width: 100%; }
+    body { overflow-x: hidden; }
+    .app, .workspace, .pane, .toolbar, .statusbar { min-width: 0; }
+    .workspace { align-items: stretch; }
+    textarea, pre, .console-output, .status, .pane-header { min-width: 0; }
+    textarea {
+      width: 100%;
+      max-width: 100%;
+      font-family: "JetBrains Mono", Menlo, Monaco, "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      tab-size: 2;
+    }
+    button, input, select { max-width: 100%; }
+    .toolbar { flex-wrap: wrap; }
+    @media (max-width: 760px) {
+      .app { padding: 10px; }
+      .workspace {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(220px, 42vh) minmax(220px, 42vh);
+      }
+      .pane { min-width: 0; }
+      .toolbar { gap: 8px; }
+      button { min-height: 38px; }
+      .statusbar { flex-wrap: wrap; }
+    }
+    @media (max-width: 420px) {
+      .app { padding: 7px; }
+      .workspace { grid-template-rows: minmax(190px, 38vh) minmax(190px, 38vh); }
+      textarea { font-size: 12px; }
+      button { flex: 1 1 auto; }
+    }
+
+  
+    /* Console and toolbar polish */
+    .console, .console-output, #console, #consoleOutput, .console-log, .console-head {
+      font-family: "JetBrains Mono", Menlo, Monaco, "Courier New", monospace;
+    }
+    .console button, .console-header button, button[aria-label*="Clear"], button[title*="Clear"] {
+      padding: 7px 12px;
+      margin: 3px 4px 3px 0;
+      line-height: 1.35;
+    }
+    .console-header, .console-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 6px 8px;
+    }
+    .tab, .pane-tab, [role="tab"] {
+      cursor: pointer;
+      user-select: none;
+    }
+    .tab:focus-visible, .pane-tab:focus-visible, [role="tab"]:focus-visible {
+      outline: 2px solid var(--accent, #6ca6ff);
+      outline-offset: 2px;
+    }
+    @media (max-width: 760px) {
+      .console-header, .console-toolbar { align-items: stretch; }
+      .console button, .console-header button, button[aria-label*="Clear"], button[title*="Clear"] {
+        padding: 9px 12px;
+      }
+    }
+
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/reicon-agent/cdn/reicon.js"></script>
+</head>
+<body>
+  <header class="titlebar">
+    <img class="brand-logo" src="https://raw.githubusercontent.com/danieltorres-mhcs/torres-l-cd/refs/heads/main/faviconli-512x512.png" alt="lI logo">
+    <span class="app-name">lI Playground</span>
+    <span class="title-spacer"></span>
+    <span class="title-hint">an experimental language editor</span>
+  </header>
+
+  <nav class="toolbar" aria-label="Editor actions">
+    <button id="encodeBtn" class="primary" type="button"><re-icon icon="file-code" size="16"></re-icon>Encode to lI</button>
+    <button id="decodeBtn" type="button"><re-icon icon="file-text" size="16"></re-icon>Decode to JS</button>
+    <button id="runBtn" type="button"><re-icon icon="play" size="16"></re-icon>Run JavaScript</button>
+    <button id="clearBtn" type="button"><re-icon icon="trash-2" size="16"></re-icon>Clear</button>
+    <label class="file-label" for="openFile"><re-icon icon="folder-open" size="16" color="currentColor"></re-icon>Open file…</label>
+    <input id="openFile" type="file" accept=".js,.li,.txt,.html">
+    <button id="saveBtn" type="button"><re-icon icon="download" size="16"></re-icon>Save output…</button>
+    <span class="toolbar-spacer"></span>
+    <span class="status-pill" id="modeStatus">Ready</span>
+  </nav>
+
+  <main class="workspace">
+    <section class="pane" aria-label="JavaScript editor">
+      <div class="tabbar">
+        <div class="tab" id="jsTab" role="button" tabindex="0" aria-label="Flip JavaScript pane position" title="Click to flip pane position"><span class="file-dot"></span><span>main.js</span></div>
+        <span class="pane-label">JavaScript</span>
+      </div>
+      <div class="editor-wrap">
+        <div class="gutter" id="jsGutter">1</div>
+        <textarea id="jsInput" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="JavaScript source" wrap="off">console.log("Hello from lI!");
+</textarea>
+      </div>
+    </section>
+
+    <section class="pane" aria-label="lI editor">
+      <div class="tabbar">
+        <div class="tab" id="liTab" role="button" tabindex="0" aria-label="Flip lI pane position" title="Click to flip pane position"><span class="file-dot" style="background:var(--atom-purple)"></span><span>main.li</span></div>
+        <span class="pane-label">lI / Huffman stream</span>
+      </div>
+      <div class="editor-wrap">
+        <div class="gutter" id="liGutter">1</div>
+        <textarea id="liOutput" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="lI source" wrap="off" placeholder="Encoded lI output will appear here…"></textarea>
+      </div>
+    </section>
+  </main>
+
+  <section class="console" aria-label="Console">
+    <div class="console-head">
+      <span class="console-tab">Console</span>
+      <span id="consoleSummary">Ready</span>
+      <span class="toolbar-spacer"></span>
+      <button id="clearConsoleBtn" type="button"><re-icon icon="trash-2" size="16" color="currentColor"></re-icon>Clear console</button>
+    </div>
+    <div class="console-output" id="consoleOutput"><span class="muted">lI Playground ready. If the buttons do nothing in an embedded preview, download this file and open it directly in a browser.</span></div>
+  </section>
+
+  <footer class="footer">
+    <span class="left">lI v0.1 · Canonical Huffman</span>
+    <span id="charCount">0 characters</span>
+    <span class="accent">UTF-8</span>
+    <span>JavaScript</span>
+  </footer>
+
+  <script>
+    "use strict";
+
+    const $ = (id) => document.getElementById(id);
+    const jsInput = $("jsInput");
+    const liOutput = $("liOutput");
+    let lastOutput = "";
+    let lastOutputType = "li";
+
+    // Clicking either filename tab swaps the JavaScript and lI panes left/right.
+    const workspace = document.querySelector(".workspace");
+    const jsPane = document.querySelector('[aria-label="JavaScript editor"]');
+    const liPane = document.querySelector('[aria-label="lI editor"]');
+    function flipPanes() {
+      if (workspace.firstElementChild === jsPane) {
+        workspace.insertBefore(liPane, jsPane);
+      } else {
+        workspace.insertBefore(jsPane, liPane);
+      }
+    }
+    for (const tab of [$("jsTab"), $("liTab")]) {
+      tab.addEventListener("click", flipPanes);
+      tab.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          flipPanes();
+        }
+      });
+    }
+
+    function log(message, type = "") {
+      const line = document.createElement("div");
+      if (type) line.className = type;
+      line.textContent = message;
+      $("consoleOutput").appendChild(line);
+      $("consoleOutput").scrollTop = $("consoleOutput").scrollHeight;
+      $("consoleSummary").textContent = message.length > 42 ? message.slice(0, 39) + "…" : message;
+    }
+
+    function clearConsole() {
+      $("consoleOutput").replaceChildren();
+      $("consoleSummary").textContent = "Console cleared";
+    }
+
+    function updateGutter(textarea, gutter) {
+      const lines = Math.max(1, textarea.value.split("\n").length);
+      gutter.textContent = Array.from({ length: lines }, (_, i) => i + 1).join("\n");
+      gutter.scrollTop = textarea.scrollTop;
+    }
+
+    function updateCounts() {
+      const count = [...jsInput.value].length;
+      $("charCount").textContent = count + (count === 1 ? " character" : " characters");
+      updateGutter(jsInput, $("jsGutter"));
+      updateGutter(liOutput, $("liGutter"));
+    }
+
+    jsInput.addEventListener("input", updateCounts);
+    liOutput.addEventListener("input", updateCounts);
+    jsInput.addEventListener("scroll", () => $("jsGutter").scrollTop = jsInput.scrollTop);
+    liOutput.addEventListener("scroll", () => $("liGutter").scrollTop = liOutput.scrollTop);
+
+    function codePointOrder(a, b) {
+      return a.codePointAt(0) - b.codePointAt(0);
+    }
+
+    function countChars(source) {
+      const frequencies = new Map();
+      for (const ch of source) frequencies.set(ch, (frequencies.get(ch) || 0) + 1);
+      return frequencies;
+    }
+
+    function compareNodes(a, b) {
+      return a.freq - b.freq ||
+        a.minCp - b.minCp ||
+        Number(a.kind !== "leaf") - Number(b.kind !== "leaf") ||
+        a.order - b.order;
+    }
+
+    function buildCodeLengths(frequencies) {
+      const entries = [...frequencies.entries()].sort((a, b) => codePointOrder(a[0], b[0]));
+      if (!entries.length) return new Map();
+      let order = 0;
+      let queue = entries.map(([ch, freq]) => ({
+        kind: "leaf", ch, freq, minCp: ch.codePointAt(0), order: order++,
+        left: null, right: null
+      }));
+      if (queue.length === 1) return new Map([[queue[0].ch, 1]]);
+
+      while (queue.length > 1) {
+        queue.sort(compareNodes);
+        const left = queue.shift();
+        const right = queue.shift();
+        queue.push({
+          kind: "internal", ch: null, freq: left.freq + right.freq,
+          minCp: Math.min(left.minCp, right.minCp), order: order++,
+          left, right
+        });
+      }
+
+      const lengths = new Map();
+      function visit(node, depth) {
+        if (node.kind === "leaf") lengths.set(node.ch, depth);
+        else { visit(node.left, depth + 1); visit(node.right, depth + 1); }
+      }
+      visit(queue[0], 0);
+      return lengths;
+    }
+
+    function buildCanonicalCodes(lengths) {
+      const entries = [...lengths.entries()].sort((a, b) =>
+        a[1] - b[1] || codePointOrder(a[0], b[0])
+      );
+      const codes = new Map();
+      if (!entries.length) return codes;
+      let code = 0n;
+      let previousLength = entries[0][1];
+      for (let i = 0; i < entries.length; i++) {
+        const [ch, length] = entries[i];
+        if (i > 0) code = (code + 1n) << BigInt(length - previousLength);
+        if (code >= (1n << BigInt(length))) throw new Error("Invalid canonical Huffman lengths.");
+        codes.set(ch, code.toString(2).padStart(length, "0"));
+        previousLength = length;
+      }
+      return codes;
+    }
+
+    function makeHeader(source, frequencies, bitCount) {
+      const count = [...source].length;
+      const field = [...frequencies.entries()]
+        .sort((a, b) => codePointOrder(a[0], b[0]))
+        .map(([ch, freq]) => "U+" + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, "0") + ":" + freq)
+        .join(",");
+      return "(!lI/1;N=" + count + ";B=" + bitCount + ";F=" + (field || "-") + ")";
+    }
+
+    function encode(source) {
+      for (let i = 0; i < source.length; i++) {
+        const unit = source.charCodeAt(i);
+        if (unit >= 0xD800 && unit <= 0xDBFF) {
+          const next = source.charCodeAt(i + 1);
+          if (!(next >= 0xDC00 && next <= 0xDFFF)) throw new Error("Source contains an unpaired UTF-16 surrogate.");
+          i++;
+        } else if (unit >= 0xDC00 && unit <= 0xDFFF) {
+          throw new Error("Source contains an unpaired UTF-16 surrogate.");
+        }
+      }
+      const frequencies = countChars(source);
+      const codes = buildCanonicalCodes(buildCodeLengths(frequencies));
+      let bits = "";
+      for (const ch of source) {
+        if (!codes.has(ch)) throw new Error("Missing Huffman code.");
+        bits += codes.get(ch);
+      }
+      return makeHeader(source, frequencies, bits.length) + "\n" +
+        bits.replace(/0/g, "l").replace(/1/g, "I") + "\n";
+    }
+
+    function parseHeader(line) {
+      const match = /^\(!lI\/1;N=(\d+);B=(\d+);F=(.*?)\)$/.exec(line);
+      if (!match) throw new Error("Missing or malformed lI v0.1 header.");
+      const count = Number(match[1]);
+      const bitCount = Number(match[2]);
+      if (!Number.isSafeInteger(count) || !Number.isSafeInteger(bitCount)) throw new Error("Header count is too large.");
+      const frequencies = new Map();
+      if (match[3] !== "-") {
+        for (const item of match[3].split(",")) {
+          const entry = /^U\+([0-9A-Fa-f]{4,6}):([1-9]\d*)$/.exec(item);
+          if (!entry) throw new Error("Malformed frequency entry: " + item);
+          const cp = Number.parseInt(entry[1], 16);
+          const freq = Number(entry[2]);
+          if (cp > 0x10FFFF || (cp >= 0xD800 && cp <= 0xDFFF) || !Number.isSafeInteger(freq)) {
+            throw new Error("Invalid frequency entry: " + item);
+          }
+          const ch = String.fromCodePoint(cp);
+          if (frequencies.has(ch)) throw new Error("Duplicate code point: " + item);
+          frequencies.set(ch, freq);
+        }
+      }
+      const sum = [...frequencies.values()].reduce((a, b) => a + b, 0);
+      if (sum !== count) throw new Error("Header frequency sum does not equal N.");
+      if ((count === 0) !== (frequencies.size === 0)) throw new Error("Empty-source header is inconsistent.");
+      return { count, bitCount, frequencies };
+    }
+
+    function stripNotes(body) {
+      let bits = "";
+      let i = 0;
+      while (i < body.length) {
+        const ch = body[i];
+        if (ch === "l" || ch === "I") {
+          bits += ch === "l" ? "0" : "1";
+          i++;
+          continue;
+        }
+        if (ch === "(") {
+          const close = body.indexOf(")", i + 1);
+          if (close !== -1) { i = close + 1; continue; }
+
+          let lastNoteChar = -1;
+          for (let j = i + 1; j < body.length; j++) {
+            if (body[j] !== "l" && body[j] !== "I" && !/\s/u.test(body[j])) lastNoteChar = j;
+          }
+          if (lastNoteChar === -1) return bits;
+          i = lastNoteChar + 1;
+          continue;
+        }
+        // All non-l/I characters outside a parenthesized note are notes.
+        i++;
+      }
+      return bits;
+    }
+
+    function decode(documentText) {
+      const newline = documentText.indexOf("\n");
+      if (newline === -1) throw new Error("Document has no header/body separator.");
+      let header = documentText.slice(0, newline);
+      if (header.endsWith("\r")) header = header.slice(0, -1);
+      const { count, bitCount, frequencies } = parseHeader(header);
+      const bits = stripNotes(documentText.slice(newline + 1));
+      if (bits.length !== bitCount) throw new Error("Bit count mismatch: header says " + bitCount + ", found " + bits.length + ".");
+      if (count === 0) {
+        if (bits.length) throw new Error("Empty source cannot contain bits.");
+        return "";
+      }
+
+      const codes = buildCanonicalCodes(buildCodeLengths(frequencies));
+      const decodeTable = new Map([...codes].map(([ch, code]) => [code, ch]));
+      let output = "";
+      let pending = "";
+      for (const bit of bits) {
+        pending += bit;
+        if (decodeTable.has(pending)) {
+          output += decodeTable.get(pending);
+          pending = "";
+        } else {
+          let prefix = false;
+          for (const code of decodeTable.keys()) if (code.startsWith(pending)) { prefix = true; break; }
+          if (!prefix) throw new Error("Invalid Huffman bit sequence.");
+        }
+      }
+      if (pending) throw new Error("Bitstream ends inside a Huffman code.");
+      if ([...output].length !== count) throw new Error("Decoded character count does not equal N.");
+      const actual = countChars(output);
+      if (actual.size !== frequencies.size || [...frequencies].some(([ch, n]) => actual.get(ch) !== n)) {
+        throw new Error("Decoded frequencies do not match the header.");
+      }
+      return output;
+    }
+
+    $("encodeBtn").addEventListener("click", () => {
+      try {
+        const result = encode(jsInput.value);
+        liOutput.value = result;
+        lastOutput = result;
+        lastOutputType = "li";
+        $("modeStatus").textContent = "Encoded";
+        log("Encoded " + [...jsInput.value].length + " source characters into " +
+          result.split("\n")[0].match(/;B=(\d+);/)[1] + " bits.", "success");
+        updateCounts();
+      } catch (error) {
+        $("modeStatus").textContent = "Error";
+        log(error.message, "error");
+      }
+    });
+
+    $("decodeBtn").addEventListener("click", () => {
+      try {
+        const result = decode(liOutput.value);
+        jsInput.value = result;
+        lastOutput = result;
+        lastOutputType = "js";
+        $("modeStatus").textContent = "Decoded";
+        log("Decoded lI successfully. Recovered " + [...result].length + " source characters.", "success");
+        updateCounts();
+      } catch (error) {
+        $("modeStatus").textContent = "Error";
+        log(error.message, "error");
+      }
+    });
+
+    $("runBtn").addEventListener("click", () => {
+      clearConsole();
+      const lines = [];
+      const safeConsole = {
+        log: (...args) => lines.push(args.map(String).join(" ")),
+        info: (...args) => lines.push(args.map(String).join(" ")),
+        warn: (...args) => lines.push("Warning: " + args.map(String).join(" ")),
+        error: (...args) => lines.push("Error: " + args.map(String).join(" "))
+      };
+      try {
+        // This is a local playground. Only run code you trust.
+        const fn = new Function("console", '"use strict";\n' + jsInput.value);
+        fn(safeConsole);
+        if (!lines.length) log("Program finished with no console output.", "muted");
+        else lines.forEach(line => log(line));
+        $("modeStatus").textContent = "Ran";
+      } catch (error) {
+        log(error.name + ": " + error.message, "error");
+        if (error.name === "EvalError" || /unsafe-eval|Content Security Policy/i.test(error.message)) {
+          log("This preview may block JavaScript execution. Download this HTML file and open it directly in a desktop browser.", "muted");
+        }
+        $("modeStatus").textContent = "Runtime error";
+      }
+    });
+
+    $("clearBtn").addEventListener("click", () => {
+      jsInput.value = "";
+      liOutput.value = "";
+      lastOutput = "";
+      $("modeStatus").textContent = "Ready";
+      clearConsole();
+      updateCounts();
+    });
+
+    $("clearConsoleBtn").addEventListener("click", clearConsole);
+
+    $("openFile").addEventListener("change", async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      try {
+        const content = await file.text();
+        if (file.name.toLowerCase().endsWith(".li")) {
+          liOutput.value = content;
+          log("Opened " + file.name + " in the lI pane.", "success");
+        } else {
+          jsInput.value = content;
+          log("Opened " + file.name + " in the JavaScript pane.", "success");
+        }
+        $("modeStatus").textContent = "Opened file";
+        updateCounts();
+      } catch (error) {
+        log("Could not open file: " + error.message, "error");
+      } finally {
+        event.target.value = "";
+      }
+    });
+
+    $("saveBtn").addEventListener("click", () => {
+      const useLi = liOutput.value.length > 0;
+      const content = useLi ? liOutput.value : jsInput.value;
+      const filename = useLi ? "main.li" : "main.js";
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      log("Saved " + filename + ".", "success");
+    });
+
+    updateCounts();
+  </script>
+</body>
+</html>
