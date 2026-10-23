@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#21252b">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="/faviconli-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/faviconli-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/faviconli-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/faviconli-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/faviconli-512x512.png">
+<script src="https://cdn.jsdelivr.net/npm/reicon-agent/cdn/reicon.js" defer></script>
+<title>lI Codebook — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#282c34;--panel:#21252b;--border:#181a1f;--text:#abb2bf;--muted:#777f8d;--blue:#61afef;--green:#98c379;--orange:#d19a66;--red:#e06c75;--purple:#c678dd}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.7 "Inter","Segoe UI",Tahoma,sans-serif}.top{height:42px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:10px;font:12px "JetBrains Mono",monospace;color:#d7dae0}.brand-logo{width:22px;height:22px;object-fit:contain;display:inline-block;border-radius:4px;flex:0 0 auto}.top re-icon,.btn re-icon{vertical-align:middle;margin-right:5px}.top a{color:var(--blue);text-decoration:none}.top .right{margin-left:auto;color:var(--muted)}main{width:min(900px,calc(100% - 36px));margin:0 auto}.intro{padding:55px 0 30px}.eyebrow{font:11px "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--purple)}h1,h2,h3{color:#e6e8eb;letter-spacing:-.035em}h1{font-size:clamp(34px,7vw,55px);line-height:1.1;margin:10px 0}h2{font-size:23px;margin:0 0 12px}h3{font-size:16px;margin:20px 0 7px}.intro p{max-width:690px;color:#aeb5c1}.section{padding:27px 0;border-top:1px solid #3a404a}.code{background:#1e2228;border:1px solid var(--border);border-radius:5px;padding:15px;overflow:auto;font:13px/1.85 "JetBrains Mono",monospace;color:#d7dae0;white-space:pre}.green{color:var(--green)}.blue{color:var(--blue)}.orange{color:var(--orange)}.purple{color:var(--purple)}.muted{color:#6b7380}code,td:first-child{font-family:"JetBrains Mono",monospace}code{color:#d7dae0;background:#20242a;padding:2px 5px;border-radius:3px;font-size:.92em}table{width:100%;border-collapse:collapse;margin:12px 0 4px;font-size:14px}th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #3a404a;vertical-align:top}th{color:#d7dae0;background:#23272e;font-weight:600}td:first-child{color:var(--blue);white-space:nowrap}.note{border-left:3px solid var(--orange);padding:10px 14px;background:#242830;margin:14px 0}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0 40px}.btn{display:inline-block;text-decoration:none;padding:9px 13px;border:1px solid #424955;border-radius:4px;background:#303640;color:#d7dae0;font-weight:700;font-size:13px}.btn.primary{background:#365d7d;border-color:#365d7d}footer{border-top:1px solid var(--border);background:var(--panel);padding:18px;text-align:center;font:11px "JetBrains Mono",monospace;color:var(--muted)}#tableSource{display:block;width:100%;min-height:145px;resize:vertical;margin:10px 0;padding:12px;background:#1e2228;color:#d7dae0;border:1px solid #424955;border-radius:5px;font:13px/1.6 "JetBrains Mono",monospace}#tableSource:focus{outline:1px solid var(--blue);border-color:var(--blue)}.table-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:10px 0}.table-scroll{width:100%;overflow:auto;border:1px solid #3a404a;border-radius:5px}.table-scroll table{margin:0;min-width:680px}.table-scroll th,.table-scroll td{padding:9px 11px}.table-scroll td{font-family:"JetBrains Mono",monospace}.table-scroll td:first-child{white-space:pre-wrap}.table-scroll .char-cell{color:var(--green)}.table-scroll .bits-cell{color:var(--orange)}.table-scroll .li-cell{color:var(--purple);overflow-wrap:anywhere;word-break:break-all}.table-scroll .empty-row{text-align:center;color:var(--muted);font-family:"Inter",sans-serif}@media(max-width:600px){.top{padding:0 12px}.top .right{display:none}main{width:calc(100% - 26px)}th,td{padding:8px 7px;font-size:12px}.intro{padding-top:38px}.code{font-size:12px}}
+</style>
+</head>
+<body>
+<header class="top"><img class="brand-logo" src="https://raw.githubusercontent.com/danieltorres-mhcs/torres-l-cd/refs/heads/main/faviconli-512x512.png" alt="lI logo"><strong>lI</strong><span>/ codebook</span><span class="right">QUICK REFERENCE · v0.1</span></header>
+<main>
+<section class="intro"><div class="eyebrow">Reference / cheat sheet</div><h1>The lI codebook</h1><p>A quick reference to the format used by lI Playground. This describes the actual v0.1 encoder and decoder: source text is compressed into a canonical Huffman bitstream represented with <code>l</code> and <code>I</code>.</p><div class="actions"><a class="btn primary" href="ide.html"><re-icon icon="code" size="16"></re-icon>Open the IDE</a><a class="btn" href="index.html"><re-icon icon="home" size="16"></re-icon>Home</a></div></section>
+<section class="section"><h2>1. The two symbols</h2><table><thead><tr><th>Character</th><th>Meaning</th><th>Use</th></tr></thead><tbody><tr><td><span class="green">l</span></td><td>Bit <code>0</code></td><td>Represents a zero bit in the encoded body.</td></tr><tr><td><span class="purple">I</span></td><td>Bit <code>1</code></td><td>Represents a one bit in the encoded body.</td></tr></tbody></table><p>The symbols encode Huffman bits; they are not individual commands or instructions. A character’s code can be more than one bit long.</p></section>
+<section class="section"><h2>2. Document structure</h2><p>An lI document has a metadata header on the first line, then a newline, then the encoded body.</p><pre class="code"><span class="green">(!lI/1;N=...;B=...;F=...)</span>
+<span class="blue">lIlIIllIIl...</span></pre><table><thead><tr><th>Header field</th><th>Meaning</th></tr></thead><tbody><tr><td><code>!lI/1</code></td><td>Format marker and version 1.</td></tr><tr><td><code>N</code></td><td>Number of Unicode characters in the original source.</td></tr><tr><td><code>B</code></td><td>Exact number of bits in the encoded body.</td></tr><tr><td><code>F</code></td><td>Character-frequency table, written as Unicode code points and counts.</td></tr></tbody></table><p>For example, <code>F=U+0041:3,U+0062:1</code> means the source contains three <code>A</code> characters and one <code>b</code>. Entries are sorted by Unicode code point. <code>F=-</code> represents an empty source.</p></section>
+<section class="section"><h2>3. Full Huffman table</h2>
+<p>This is the <strong>complete table generated by the same canonical Huffman algorithm as the IDE</strong>, not a small made-up example. It starts with the IDE's default JavaScript. Change the source below to generate the full table for your own code.</p>
+<label for="tableSource"><strong>Source text</strong></label>
+<textarea id="tableSource" spellcheck="false" autocapitalize="off" autocomplete="off">console.log("Hello from lI!");</textarea>
+<div class="table-toolbar"><span id="tableSummary" class="muted">Generating table…</span><button id="generateTable" class="btn primary" type="button"><re-icon icon="refresh-cw" size="16"></re-icon>Generate full table</button></div>
+<div class="table-scroll"><table id="huffmanTable"><thead><tr><th>Character</th><th>Unicode</th><th>Frequency</th><th>Code length</th><th>Huffman bits</th><th>lI code</th></tr></thead><tbody id="huffmanRows"><tr><td colspan="6">Table will appear here.</td></tr></tbody></table></div>
+<div class="note"><strong>How to read it:</strong> every row is one unique character in the source. <code>0</code> becomes lowercase <code>l</code>, and <code>1</code> becomes uppercase <code>I</code>. The codes are based on the complete source text, so changing the source can change the whole table.</div>
+</section>
+<section class="section"><h2>4. How encoding works</h2><ol><li>Count each Unicode character in the source.</li><li>Build a Huffman tree from the character frequencies.</li><li>Use the tree to determine each character’s code length.</li><li>Assign canonical Huffman codes by sorting on code length, then Unicode code point.</li><li>Replace every <code>0</code> bit with <code>l</code> and every <code>1</code> bit with <code>I</code>.</li><li>Write the header and encoded body to the output.</li></ol><p>Because code lengths depend on the whole source, the same character may receive a different code in a different document.</p></section>
+<section class="section"><h2>5. Notes and whitespace</h2><p>The decoder reads the first line as the header. In the body, whitespace and characters other than <code>l</code> and <code>I</code> are ignored. Parenthesized notes are also skipped.</p><pre class="code"><span class="muted">(a note for humans)</span>
+lIlI lIIll
+<span class="muted">extra body notes can be added here</span></pre><div class="note"><strong>Important:</strong> Notes are only for readability. The decoder still checks the exact bit count against <code>B</code>; accidentally adding an <code>l</code> or <code>I</code> inside a note can affect the stream if the note is not properly enclosed.</div></section>
+<section class="section"><h2>6. Quick troubleshooting</h2><table><thead><tr><th>Message / symptom</th><th>Likely cause</th></tr></thead><tbody><tr><td>Missing or malformed header</td><td>The first line does not match the lI v0.1 header format.</td></tr><tr><td>Bit count mismatch</td><td>The body contains more or fewer <code>l</code>/<code>I</code> symbols than the header says.</td></tr><tr><td>Invalid Huffman bit sequence</td><td>The bitstream does not match the codes reconstructed from the frequency table.</td></tr><tr><td>Decoded character count does not equal N</td><td>The recovered text length differs from the header’s character count.</td></tr><tr><td>Frequency mismatch</td><td>The decoded text does not match the character counts recorded in the header.</td></tr></tbody></table></section>
+<section class="section"><h2>7. What lI is (for now)</h2><p>The current playground is an encoding experiment rather than a full language runtime. You can encode JavaScript source into lI, decode it back, and run the JavaScript in the separate JavaScript pane. The lI pane itself is not directly executed as a program.</p><div class="actions"><a class="btn primary" href="ide.html"><re-icon icon="terminal" size="16"></re-icon>Try it in the IDE</a><a class="btn" href="index.html"><re-icon icon="arrow-left" size="16"></re-icon>Back to home</a></div></section>
+</main>
+<footer>lI CODEBOOK · v0.1 · CANONICAL HUFFMAN</footer>
+
+<script>
+(() => {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const sourceInput = $("tableSource");
+  const rows = $("huffmanRows");
+  const summary = $("tableSummary");
+  function codePointOrder(a, b) { return a.codePointAt(0) - b.codePointAt(0); }
+  function countChars(source) {
+    const frequencies = new Map();
+    for (const ch of source) frequencies.set(ch, (frequencies.get(ch) || 0) + 1);
+    return frequencies;
+  }
+  function compareNodes(a, b) {
+    return a.freq - b.freq || a.minCp - b.minCp ||
+      Number(a.kind !== "leaf") - Number(b.kind !== "leaf") || a.order - b.order;
+  }
+  function buildCodeLengths(frequencies) {
+    const entries = [...frequencies.entries()].sort((a,b) => codePointOrder(a[0], b[0]));
+    if (!entries.length) return new Map();
+    let order = 0;
+    let queue = entries.map(([ch, freq]) => ({kind:"leaf", ch, freq, minCp:ch.codePointAt(0), order:order++, left:null, right:null}));
+    if (queue.length === 1) return new Map([[queue[0].ch, 1]]);
+    while (queue.length > 1) {
+      queue.sort(compareNodes);
+      const left = queue.shift(), right = queue.shift();
+      queue.push({kind:"internal", ch:null, freq:left.freq+right.freq, minCp:Math.min(left.minCp,right.minCp), order:order++, left, right});
+    }
+    const lengths = new Map();
+    function visit(node, depth) {
+      if (node.kind === "leaf") lengths.set(node.ch, depth);
+      else { visit(node.left, depth+1); visit(node.right, depth+1); }
+    }
+    visit(queue[0], 0);
+    return lengths;
+  }
+  function buildCanonicalCodes(lengths) {
+    const entries = [...lengths.entries()].sort((a,b) => a[1]-b[1] || codePointOrder(a[0],b[0]));
+    const codes = new Map();
+    if (!entries.length) return codes;
+    let code = 0n, previousLength = entries[0][1];
+    for (let i=0; i<entries.length; i++) {
+      const [ch, length] = entries[i];
+      if (i>0) code = (code+1n) << BigInt(length-previousLength);
+      if (code >= (1n << BigInt(length))) throw new Error("Invalid canonical Huffman lengths.");
+      codes.set(ch, code.toString(2).padStart(length,"0"));
+      previousLength = length;
+    }
+    return codes;
+  }
+  function codePointLabel(ch) {
+    return "U+" + ch.codePointAt(0).toString(16).toUpperCase().padStart(4,"0");
+  }
+  function visibleChar(ch) {
+    if (ch === " ") return "␠ (space)";
+    if (ch === "\n") return "↵ (newline)";
+    if (ch === "\r") return "␍ (carriage return)";
+    if (ch === "\t") return "⇥ (tab)";
+    if (ch === "\0") return "␀ (NUL)";
+    if (/^[\p{C}]$/u.test(ch)) return "(control character)";
+    return ch;
+  }
+  function cell(tr, text, className) {
+    const td = document.createElement("td");
+    if (className) td.className = className;
+    td.textContent = text;
+    tr.appendChild(td);
+  }
+  function renderTable() {
+    const source = sourceInput.value;
+    const frequencies = countChars(source);
+    const lengths = buildCodeLengths(frequencies);
+    const codes = buildCanonicalCodes(lengths);
+    rows.replaceChildren();
+    const entries = [...frequencies.entries()].sort((a,b) => codePointOrder(a[0],b[0]));
+    for (const [ch, frequency] of entries) {
+      const bits = codes.get(ch) || "";
+      const tr = document.createElement("tr");
+      cell(tr, visibleChar(ch), "char-cell");
+      cell(tr, codePointLabel(ch));
+      cell(tr, String(frequency));
+      cell(tr, String(lengths.get(ch) || 0));
+      cell(tr, bits || "—", "bits-cell");
+      cell(tr, bits.replace(/0/g,"l").replace(/1/g,"I") || "—", "li-cell");
+      rows.appendChild(tr);
+    }
+    if (!entries.length) {
+      const tr = document.createElement("tr"), td = document.createElement("td");
+      td.colSpan = 6; td.className = "empty-row"; td.textContent = "Empty source — no Huffman table entries.";
+      tr.appendChild(td); rows.appendChild(tr);
+    }
+    summary.textContent = entries.length + " unique characters · " + [...source].length + " total characters · same algorithm as ide.html";
+  }
+  $("generateTable").addEventListener("click", renderTable);
+  sourceInput.addEventListener("input", renderTable);
+  renderTable();
+})();
+</script>
+
+</body>
+</html>
