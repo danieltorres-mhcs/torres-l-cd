@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#21252b">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="/faviconli-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/faviconli-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/faviconli-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/faviconli-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/faviconli-512x512.png">
+<script src="https://cdn.jsdelivr.net/npm/reicon-agent/cdn/reicon.js"></script>
+<title>lI — Esolang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#282c34;--panel:#21252b;--border:#181a1f;--text:#abb2bf;--muted:#777f8d;--blue:#61afef;--green:#98c379;--purple:#c678dd}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 "Inter","Segoe UI",Tahoma,sans-serif}
+.top{height:42px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:10px;font:12px "JetBrains Mono",monospace;color:#d7dae0}.brand-logo{width:22px;height:22px;object-fit:contain;display:inline-block;border-radius:4px;flex:0 0 auto}.top re-icon,.btn re-icon{vertical-align:middle;margin-right:5px}.top small{margin-left:auto;color:var(--muted)}
+main{width:min(1060px,calc(100% - 40px));margin:auto}.hero{padding:100px 0 72px;max-width:790px}.eyebrow{font:12px "JetBrains Mono",monospace;color:var(--green);letter-spacing:.12em;text-transform:uppercase}.hero h1{font-size:clamp(56px,10vw,100px);line-height:1.02;letter-spacing:1;color:#e6e8eb;margin:18px 0 22px;font-weight:800}.hero h1 span{color:var(--blue)}.hero p{font-size:19px;max-width:650px;color:#aeb5c1;margin:0 0 30px}.actions{display:flex;flex-wrap:wrap;gap:12px}.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:12px 17px;border:1px solid #424955;border-radius:5px;color:#d7dae0;background:#303640;font-weight:700;font-size:14px}.btn.primary{background:#365d7d;border-color:#365d7d;color:#f4f9ff}.btn:hover{filter:brightness(1.13)}.section{border-top:1px solid #3a404a;padding:35px 0 48px}.section h2{color:#e6e8eb;font-size:22px;letter-spacing:-.03em;margin:0 0 12px}.section p{margin:0;max-width:750px}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}.feature{padding:20px;background:var(--panel);border:1px solid var(--border);border-radius:6px}.feature code,.sample{font-family:"JetBrains Mono",monospace}.feature .symbol{color:var(--blue);display:inline-flex;align-items:center;min-height:24px}.feature .symbol re-icon{display:inline-block}.feature h3{color:#d7dae0;font-size:15px;margin:10px 0 5px}.feature p{font-size:13px;color:var(--muted)}.sample{background:#1e2228;border:1px solid var(--border);border-radius:6px;padding:18px;overflow:auto;color:#c8ccd4;font-size:13px;line-height:1.8}.comment{color:#6b7380}.green{color:var(--green)}.blue{color:var(--blue)}footer{border-top:1px solid var(--border);background:var(--panel);padding:20px;text-align:center;font:11px "JetBrains Mono",monospace;color:var(--muted)}@media(max-width:700px){.hero{padding:70px 0 50px}.features{grid-template-columns:1fr}.hero p{font-size:17px}.top{padding:0 14px}main{width:min(100% - 28px,1060px)}}
+</style>
+</head>
+<body>
+<header class="top"><img class="brand-logo" src="https://raw.githubusercontent.com/danieltorres-mhcs/torres-l-cd/refs/heads/main/faviconli-512x512.png" alt="lI logo"><strong>lI</strong><span>/ home</span><small>ESOLANG · v0.1</small></header>
+<main>
+<section class="hero">
+<div class="eyebrow">A tiny language experiment</div>
+<h1>Say Hi to <span>lI.</span></h1>
+<p>A peculiar, esolang where JavaScript source is transformed into a stream made from just two lookalike characters: lowercase <code>l</code> and uppercase <code>I</code>.</p>
+<div class="actions"><a class="btn primary" href="/ide"><re-icon icon="code" size="16"></re-icon>Open the IDE</a><a class="btn" href="/codebook"><re-icon icon="book-open" size="16"></re-icon>Read the codebook</a></div>
+</section>
+<section class="section">
+<h2>What is lI?</h2>
+<p>lI v0.1 uses canonical Huffman coding to encode source text. The result has a small metadata header, followed by the encoded stream. It’s esolang-inspired in appearance, but the current playground encodes and decodes JavaScript text—it does not interpret lI as a standalone programming language.</p>
+<div class="features">
+<article class="feature"><div class="symbol" aria-hidden="true"><re-icon icon="binary" size="22" color="currentColor"></re-icon></div><h3>Two-symbol stream</h3><p>Bits are represented using two visually similar characters: <code>l</code> stands for 0 and <code>I</code> stands for 1.</p></article>
+<article class="feature"><div class="symbol" aria-hidden="true"><re-icon icon="git-branch" size="22" color="currentColor"></re-icon></div><h3>Canonical Huffman</h3><p>Character frequencies build the Huffman code lengths, then canonical rules assign reproducible bit codes.</p></article>
+<article class="feature"><div class="symbol" aria-hidden="true"><re-icon icon="arrow-left-right" size="22" color="currentColor"></re-icon></div><h3>Encode & decode</h3><p>Convert JavaScript source into lI text, decode it back, or run the JavaScript in the local playground.</p></article>
+</div>
+</section>
+<section class="section">
+<h2>A tiny peek</h2>
+<p>The header stores the character count, number of encoded bits, and each character’s Unicode code point and frequency.</p>
+<pre class="sample"><span class="green">(!lI/1;N=2;B=2;F=U+0041:1,U+0042:1)</span>
+<span class="blue">lI</span>
+<span class="comment">Header shown as an illustrative example; actual bit codes depend on the complete source.</span></pre>
+</section>
+<section class="section">
+<h2>Start exploring</h2>
+<p>Use the IDE to experiment with source text, and keep the codebook open when you need the file format, symbol mapping, or header fields explained.</p>
+<div class="actions" style="margin-top:20px"><a class="btn primary" href="/li/ide"><re-icon icon="terminal" size="16"></re-icon>Launch lI Playground</a><a class="btn" href="/li/codebook"><re-icon icon="book-open" size="16"></re-icon>Open cheat sheet</a></div>
+</section>
+</main>
+<footer>lI PLAYGROUND · v0.1 · CANONICAL HUFFMAN · MADE FOR FUN</footer>
+</body>
+</html>
