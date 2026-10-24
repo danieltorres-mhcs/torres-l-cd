@@ -347,13 +347,14 @@
 <body>
   <header class="titlebar">
     <img class="brand-logo" src="https://raw.githubusercontent.com/danieltorres-mhcs/torres-l-cd/refs/heads/main/faviconli-512x512.png" alt="lI logo">
-    <span class="app-name">lI Playgrounf</span>
+    <span class="app-name">lI Playground</span>
     <span class="title-spacer"></span>
     <span class="title-hint">an esoteric language editor</span>
   </header>
 
   <nav class="toolbar" aria-label="Editor actions">
     <button id="encodeBtn" class="primary" type="button"><re-icon icon="file-code" size="16"></re-icon>Encode to lI</button>
+    <button id="encodeHeaderlessBtn" type="button" title="Encode using the shared fixed canonical Huffman table, without a metadata header"><re-icon icon="file-code" size="16"></re-icon>Encode headerless</button>
     <button id="decodeBtn" type="button"><re-icon icon="file-text" size="16"></re-icon>Decode to JS</button>
     <button id="runBtn" type="button"><re-icon icon="play" size="16"></re-icon>Run lI</button>
     <button id="clearBtn" type="button"><re-icon icon="trash-2" size="16"></re-icon>Clear</button>
@@ -380,7 +381,7 @@
     <section class="pane" aria-label="lI editor">
       <div class="tabbar">
         <div class="tab" id="liTab" role="button" tabindex="0" aria-label="Flip lI pane position" title="Click to flip pane position"><span class="file-dot" style="background:var(--atom-purple)"></span><span>main.li</span></div>
-        <span class="pane-label">lI / Huffman stream</span>
+        <span class="pane-label">lI stream</span>
       </div>
       <div class="editor-wrap">
         <div class="gutter" id="liGutter">1</div>
@@ -396,7 +397,7 @@
       <span class="toolbar-spacer"></span>
       <button id="clearConsoleBtn" type="button"><re-icon icon="trash-2" size="16" color="currentColor"></re-icon>Clear console</button>
     </div>
-    <div class="console-output" id="consoleOutput"><span class="muted">lI Playground ready. If the buttons do nothing in an embedded preview, download this file and open it directly in a browser.</span></div>
+    <div class="console-output" id="consoleOutput"><span class="muted">lI Playground ready. If the buttons do nothing in an embedded preview, open <a href="https://torres.l.cd/li/ide">this link</a>a>.</span></div>
   </section>
 
   <footer class="footer">
@@ -613,26 +614,25 @@
           i = lastNoteChar + 1;
           continue;
         }
-        // All non-l/I characters outside a parenthesized note are notes.
         i++;
       }
       return bits;
     }
 
-    function decode(documentText) {
-      const newline = documentText.indexOf("\n");
-      if (newline === -1) throw new Error("Document has no header/body separator.");
-      let header = documentText.slice(0, newline);
-      if (header.endsWith("\r")) header = header.slice(0, -1);
-      const { count, bitCount, frequencies } = parseHeader(header);
-      const bits = stripNotes(documentText.slice(newline + 1));
-      if (bits.length !== bitCount) throw new Error("Bit count mismatch: header says " + bitCount + ", found " + bits.length + ".");
-      if (count === 0) {
-        if (bits.length) throw new Error("Empty source cannot contain bits.");
-        return "";
-      }
 
-      const codes = buildCanonicalCodes(buildCodeLengths(frequencies));
+    function buildFixedByteCodes() {
+      const frequencies = new Map();
+      for (let byte = 0; byte < 256; byte++) frequencies.set(String.fromCharCode(byte), 1);
+      const model = "const state = { count: 0, items: [], active: true };\nfunction updateState(value) {\n  if (value == null) return false;\n  state.count += 1;\n  state.items.push(value);\n  return state.count;\n}\nconst getItem = (items, index = 0) => items[index] ?? null;\nclass AppController {\n  constructor(options = {}) {\n    this.options = options;\n    this.ready = true;\n  }\n  async load(url) {\n    try {\n      const response = await fetch(url);\n      if (!response.ok) throw new Error(`HTTP ${response.status}`);\n      const data = await response.json();\n      return data;\n    } catch (error) {\n      console.error(\"Load failed:\", error);\n      return { error: String(error) };\n    }\n  }\n}\nfor (const item of state.items) {\n  console.log(\"item:\", item);\n}\nconst message = 'Hello, world!';\nconst template = `Count: ${state.count}`;\nconst pattern = /[a-z]+/gi;\nconst result = state.items.map((item) => ({ id: item.id, name: item.name ?? \"\" }));\nexport { state, updateState, getItem, AppController, result };\n";
+      for (const ch of model) {
+        const key = String.fromCharCode(ch.charCodeAt(0) & 255);
+        frequencies.set(key, (frequencies.get(key) || 1) + 1);
+      }
+      return buildCanonicalCodes(buildCodeLengths(frequencies));
+    }
+    const fixedByteCodes = buildFixedByteCodes();
+
+    function decodeWithCodes(bits, codes) {
       const decodeTable = new Map([...codes].map(([ch, code]) => [code, ch]));
       let output = "";
       let pending = "";
@@ -644,10 +644,54 @@
         } else {
           let prefix = false;
           for (const code of decodeTable.keys()) if (code.startsWith(pending)) { prefix = true; break; }
-          if (!prefix) throw new Error("Invalid Huffman bit sequence.");
+          if (!prefix) throw new Error("Invalid canonical Huffman bit sequence.");
         }
       }
       if (pending) throw new Error("Bitstream ends inside a Huffman code.");
+      return output;
+    }
+
+    function encodeHeaderless(source) {
+      const bytes = new TextEncoder().encode(source);
+      let bits = "";
+      for (const byte of bytes) {
+        const code = fixedByteCodes.get(String.fromCharCode(byte));
+        if (!code) throw new Error("No fixed Huffman code for byte " + byte + ".");
+        bits += code;
+      }
+      return bits.replace(/0/g, "l").replace(/1/g, "I") + "\n";
+    }
+
+    function decodeHeaderless(documentText) {
+      const bits = stripNotes(documentText).replace(/\s/g, "");
+      const byteChars = decodeWithCodes(bits, fixedByteCodes);
+      const bytes = Uint8Array.from(byteChars, ch => ch.charCodeAt(0));
+      try {
+        return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+      } catch (_) {
+        throw new Error("Headerless stream decoded, but its bytes are not valid UTF-8. Make sure it uses the fixed canonical Huffman table.");
+      }
+    }
+
+    function decode(documentText) {
+      const newline = documentText.indexOf("\n");
+      let header = newline === -1 ? documentText : documentText.slice(0, newline);
+      if (header.endsWith("\r")) header = header.slice(0, -1);
+      if (!/^\(!lI\/1;N=/.test(header)) {
+        if (header.startsWith("(!lI")) throw new Error("Malformed lI header. Fix the header or remove it completely to use the fixed canonical Huffman table.");
+        return decodeHeaderless(documentText);
+      }
+      if (newline === -1) throw new Error("Headered lI document has no header/body separator.");
+      const { count, bitCount, frequencies } = parseHeader(header);
+      const bits = stripNotes(documentText.slice(newline + 1));
+      if (bits.length !== bitCount) throw new Error("Bit count mismatch: header says " + bitCount + ", found " + bits.length + ".");
+      if (count === 0) {
+        if (bits.length) throw new Error("Empty source cannot contain bits.");
+        return "";
+      }
+
+      const codes = buildCanonicalCodes(buildCodeLengths(frequencies));
+      const output = decodeWithCodes(bits, codes);
       if ([...output].length !== count) throw new Error("Decoded character count does not equal N.");
       const actual = countChars(output);
       if (actual.size !== frequencies.size || [...frequencies].some(([ch, n]) => actual.get(ch) !== n)) {
@@ -665,6 +709,21 @@
         $("modeStatus").textContent = "Encoded";
         log("Encoded " + [...jsInput.value].length + " source characters into " +
           result.split("\n")[0].match(/;B=(\d+);/)[1] + " bits.", "success");
+        updateCounts();
+      } catch (error) {
+        $("modeStatus").textContent = "Error";
+        log(error.message, "error");
+      }
+    });
+
+    $("encodeHeaderlessBtn").addEventListener("click", () => {
+      try {
+        const result = encodeHeaderless(jsInput.value);
+        liOutput.value = result;
+        lastOutput = result;
+        lastOutputType = "li";
+        $("modeStatus").textContent = "Encoded headerless";
+        log("Encoded " + new TextEncoder().encode(jsInput.value).length + " UTF-8 bytes using the fixed canonical Huffman table (no header).", "success");
         updateCounts();
       } catch (error) {
         $("modeStatus").textContent = "Error";
@@ -706,7 +765,7 @@
         if (!lines.length) log("lI program finished with no console output.", "muted");
         else lines.forEach(line => log(line));
         $("modeStatus").textContent = "Ran lI";
-        log("Parsed lI and executed.", "success");
+        log("Parsed and executed.", "success");
       } catch (error) {
         log(error.name + ": " + error.message, "error");
         if (error.name === "EvalError" || /unsafe-eval|Content Security Policy/i.test(error.message)) {
