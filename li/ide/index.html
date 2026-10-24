@@ -6,12 +6,6 @@
   <title>lI Playground</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="16x16" href="/faviconli-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/faviconli-32x32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/faviconli-180x180.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/faviconli-192x192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/faviconli-512x512.png">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -346,23 +340,25 @@
     }
 
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/reicon-agent/cdn/reicon.js"></script>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/danieltorres-mhcs/torres-l-cd/refs/heads/main/faviconli-512x512.png">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/danieltorres-mhcs/torres-l-cd/refs/heads/main/faviconli-512x512.png">
+  <script src="https://cdn.jsdelivr.net/npm/reicon-agent/cdn/reicon.js" defer></script>
 </head>
 <body>
   <header class="titlebar">
     <img class="brand-logo" src="https://raw.githubusercontent.com/danieltorres-mhcs/torres-l-cd/refs/heads/main/faviconli-512x512.png" alt="lI logo">
-    <span class="app-name">lI Playground</span>
+    <span class="app-name">lI Playgrounf</span>
     <span class="title-spacer"></span>
-    <span class="title-hint">an experimental language editor</span>
+    <span class="title-hint">an esoteric language editor</span>
   </header>
 
   <nav class="toolbar" aria-label="Editor actions">
     <button id="encodeBtn" class="primary" type="button"><re-icon icon="file-code" size="16"></re-icon>Encode to lI</button>
     <button id="decodeBtn" type="button"><re-icon icon="file-text" size="16"></re-icon>Decode to JS</button>
-    <button id="runBtn" type="button"><re-icon icon="play" size="16"></re-icon>Run JavaScript</button>
+    <button id="runBtn" type="button"><re-icon icon="play" size="16"></re-icon>Run lI</button>
     <button id="clearBtn" type="button"><re-icon icon="trash-2" size="16"></re-icon>Clear</button>
     <label class="file-label" for="openFile"><re-icon icon="folder-open" size="16" color="currentColor"></re-icon>Open file…</label>
-    <input id="openFile" type="file" accept=".js,.li,.txt,.html">
+    <input id="openFile" type="file" accept=".js,.li,.txt">
     <button id="saveBtn" type="button"><re-icon icon="download" size="16"></re-icon>Save output…</button>
     <span class="toolbar-spacer"></span>
     <span class="status-pill" id="modeStatus">Ready</span>
@@ -701,18 +697,22 @@
         error: (...args) => lines.push("Error: " + args.map(String).join(" "))
       };
       try {
-        // This is a local playground. Only run code you trust.
-        const fn = new Function("console", '"use strict";\n' + jsInput.value);
+        if (!liOutput.value.trim()) {
+          throw new Error("Paste or open an lI document in the main.li pane first.");
+        }
+        const source = decode(liOutput.value);
+        const fn = new Function("console", '"use strict";\n' + source);
         fn(safeConsole);
-        if (!lines.length) log("Program finished with no console output.", "muted");
+        if (!lines.length) log("lI program finished with no console output.", "muted");
         else lines.forEach(line => log(line));
-        $("modeStatus").textContent = "Ran";
+        $("modeStatus").textContent = "Ran lI";
+        log("Parsed lI and executed.", "success");
       } catch (error) {
         log(error.name + ": " + error.message, "error");
         if (error.name === "EvalError" || /unsafe-eval|Content Security Policy/i.test(error.message)) {
-          log("This preview may block JavaScript execution. Download this HTML file and open it directly in a desktop browser.", "muted");
+          log("This preview may block JavaScript execution.", "muted");
         }
-        $("modeStatus").textContent = "Runtime error";
+        $("modeStatus").textContent = "Run error";
       }
     });
 
