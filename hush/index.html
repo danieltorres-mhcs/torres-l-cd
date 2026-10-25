@@ -1,0 +1,1333 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1e1e2e">
+<title>hush.</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Remix Icon -->
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+:root {
+  color-scheme: dark;
+  --base: #1e1e2e;
+  --mantle: #181825;
+  --surface: #313244;
+  --surface-hover: #45475a;
+  --text: #cdd6f4;
+  --subtext: #a6adc8;
+  --muted: #6c7086;
+  --accent: #cba6f7;
+  --green: #a6e3a1;
+  --red: #f38ba8;
+  --border: #313244;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--base);
+  color: var(--text);
+  font: 13px/1.55 "JetBrains Mono", monospace;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, textarea {
+  font: inherit;
+  color: var(--text);
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--surface);
+  border-radius: 4px;
+  padding: 7px 10px;
+  background: var(--surface);
+  transition: background .15s, border-color .15s, transform .15s;
+}
+
+button:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--muted);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+.file-card:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.primary {
+  background: var(--accent);
+  color: var(--base);
+  border-color: var(--accent);
+  font-weight: 500;
+}
+
+.primary:hover:not(:disabled) {
+  background: #d8b8ff;
+  border-color: #d8b8ff;
+}
+
+.danger { color: var(--red); }
+
+input, textarea {
+  width: 100%;
+  border: 1px solid var(--surface);
+  background: var(--mantle);
+  border-radius: 4px;
+  padding: 9px 10px;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--muted);
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--subtext);
+  font-size: 11px;
+}
+
+a { color: var(--accent); }
+
+.topbar {
+  height: 46px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.brand {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -.6px;
+  cursor: pointer;
+}
+
+.brand span { color: var(--accent); }
+
+.status {
+  color: var(--subtext);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+main {
+  width: min(100% - 28px, 430px);
+  margin: 54px auto;
+}
+
+h1, h2, p { margin-top: 0; }
+
+h1 {
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: -1px;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+h2 {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: var(--subtext);
+  font-size: 12px;
+  margin-bottom: 22px;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 9px;
+}
+
+.panel p {
+  color: var(--subtext);
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.field { margin: 12px 0; }
+.field button, .full { width: 100%; }
+
+.hint, .notice, .error { font-size: 11px; }
+
+.hint { color: var(--muted); margin-top: 6px; }
+
+.notice {
+  background: var(--mantle);
+  padding: 9px;
+  border-radius: 4px;
+  color: var(--subtext);
+}
+
+.error {
+  color: var(--red);
+  min-height: 17px;
+  margin-top: 7px;
+}
+
+.hidden { display: none !important; }
+
+.row {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.row > input { min-width: 0; }
+
+.room-code {
+  background: var(--mantle);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  margin: 10px 0;
+}
+
+.waiting {
+  margin: 16px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.spinner {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  margin-top: 3px;
+  border: 1px solid var(--surface-hover);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Chat */
+
+.chat-shell {
+  width: min(100% - 24px, 780px);
+  margin: 20px auto;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.chat-title { font-weight: 500; }
+.chat-meta { font-size: 11px; color: var(--subtext); }
+
+.chat-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  min-height: 400px;
+}
+
+.messages {
+  padding: 12px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-wrap: anywhere;
+}
+
+.message {
+  max-width: 90%;
+  align-self: flex-start;
+  min-width: 0;
+}
+
+.message.mine { align-self: flex-end; }
+
+.sender {
+  font-size: 10px;
+  color: var(--subtext);
+  margin-bottom: 3px;
+}
+
+.bubble {
+  background: var(--surface);
+  padding: 7px 9px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.mine .bubble { background: #45405b; }
+
+.message-time {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.system-message {
+  text-align: center;
+  font-size: 10px;
+  color: var(--muted);
+  padding: 5px;
+}
+
+.sidebar {
+  background: var(--mantle);
+  border-left: 1px solid var(--border);
+  padding: 12px;
+  min-width: 0;
+}
+
+.side-heading {
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 9px;
+}
+
+.peer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  overflow-wrap: anywhere;
+}
+
+.side-rule {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 14px 0;
+}
+
+/* Composer and selected attachment previews */
+
+.composer {
+  border-top: 1px solid var(--border);
+  padding: 10px;
+}
+
+.composer textarea {
+  resize: vertical;
+  min-height: 42px;
+  max-height: 120px;
+}
+
+.composer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 7px;
+}
+
+.char-count {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.attachment-section {
+  margin-bottom: 9px;
+}
+
+.attachment-heading {
+  color: var(--subtext);
+  font-size: 10px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.attachment-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.attachment {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  position: relative;
+  background: var(--mantle);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 9px;
+  transition: background .15s, border-color .15s, transform .15s;
+}
+
+.attachment:hover {
+  background: var(--surface);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.attachment-icon {
+  width: 32px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 21px;
+}
+
+.attachment-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.attachment-name {
+  font-size: 10px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.attachment-size {
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+.remove-file {
+  padding: 3px 5px;
+  font-size: 13px;
+  flex-shrink: 0;
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+}
+
+.remove-file:hover:not(:disabled) {
+  color: var(--red);
+  background: #30202a;
+  border-color: transparent;
+}
+
+/* Downloadable file cards inside sent messages */
+
+.message-files {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+  min-width: 0;
+}
+
+.file-card {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  width: 100%;
+  text-decoration: none;
+  color: var(--text);
+  text-align: left;
+  background: var(--mantle);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 9px;
+  transition: background .15s, border-color .15s, transform .15s, box-shadow .15s;
+  cursor: pointer;
+}
+
+.file-card:hover {
+  background: #29283b;
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px #11111b55;
+}
+
+.file-card:active {
+  transform: translateY(0);
+}
+
+.file-icon {
+  width: 38px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-radius: 4px;
+  color: var(--accent);
+  font-size: 24px;
+}
+
+.file-icon.pdf { color: var(--red); }
+.file-icon.zip { color: var(--green); }
+
+.file-details {
+  min-width: 0;
+  flex: 1;
+}
+
+.file-name {
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.file-size {
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+.download-icon {
+  color: var(--muted);
+  font-size: 17px;
+  flex-shrink: 0;
+  transition: color .15s, transform .15s;
+}
+
+.file-card:hover .download-icon {
+  color: var(--accent);
+  transform: translateY(2px);
+}
+
+.file-button {
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.file-item {
+  font-size: 11px;
+  overflow-wrap: anywhere;
+  margin-top: 6px;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 10px;
+  padding: 20px 12px;
+}
+
+@media (max-width: 560px) {
+  main { margin-top: 32px; }
+
+  .panel { padding: 13px; }
+
+  .chat-shell {
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .chat-body {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .messages { min-height: 320px; }
+
+  .sidebar {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    padding: 12px;
+  }
+
+  .chat-header { padding: 10px; }
+
+  .chat-header button {
+    padding: 6px 7px;
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<header class="topbar">
+  <div class="brand" onclick="goHome()">hush<span>.</span></div>
+  <div class="status">
+    <span class="dot"></span>
+    <span id="headerStatus">preview</span>
+  </div>
+</header>
+
+<main id="home">
+  <h1>Private rooms.<br>No accounts.</h1>
+  <p class="subtitle">Temporary chat and file sharing.</p>
+
+  <section class="panel">
+    <h2>Create room</h2>
+    <p>Start a room and share its private invitation.</p>
+
+    <div class="field">
+      <label for="createName">Display name</label>
+      <input id="createName" maxlength="24" placeholder="your name" autocomplete="nickname">
+    </div>
+
+    <button class="primary full" onclick="createRoom()">Create room</button>
+    <div id="createError" class="error"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Join room</h2>
+    <p>Enter the invitation link or room secret.</p>
+
+    <div class="field">
+      <label for="joinName">Display name</label>
+      <input id="joinName" maxlength="24" placeholder="your name" autocomplete="nickname">
+    </div>
+
+    <div class="field">
+      <label for="joinSecret">Invitation</label>
+      <input id="joinSecret" placeholder="link or secret" autocomplete="off">
+    </div>
+
+    <button class="full" onclick="joinRoom()">Join room</button>
+    <div id="joinError" class="error"></div>
+  </section>
+
+  <div class="notice">
+    Backend chat setup. Text is encrypted in your browser; file transfers are not connected yet.
+  </div>
+</main>
+
+<main id="waitingScreen" class="hidden">
+  <h1>Room created</h1>
+  <p class="subtitle">Share the invitation with one other person.</p>
+
+  <section class="panel">
+    <label>Invitation link</label>
+    <div class="room-code" id="inviteLink"></div>
+
+    <div class="row">
+      <button class="primary" style="flex:1" onclick="copyInvite()">Copy link</button>
+      <button onclick="copySecret()">Copy secret</button>
+    </div>
+
+    <div class="waiting">
+      <div class="spinner"></div>
+      <div>
+        <div>Waiting for peer</div>
+        <div class="hint">Pending rooms don't occupy an active slot.</div>
+      </div>
+    </div>
+
+    <div class="notice">
+      Keep this page open while the other person joins. Your encryption key stays in this invitation link.
+    </div>
+
+    <div id="waitingError" class="error"></div>
+    <button class="full" style="margin-top:7px" onclick="goHome()">Back</button>
+  </section>
+</main>
+
+<section id="chatScreen" class="hidden">
+  <div class="chat-shell">
+    <header class="chat-header">
+      <div>
+        <div class="chat-title">room/<span id="roomLabel"></span></div>
+        <div class="chat-meta" id="roomStatus">connecting…</div>
+      </div>
+      <div class="row">
+        <button onclick="copyInvite()">Invite</button>
+        <button class="danger" onclick="leaveRoom()">Leave</button>
+      </div>
+    </header>
+
+    <div class="chat-body">
+      <div style="min-width:0;display:flex;flex-direction:column">
+        <div class="messages" id="messages" aria-live="polite">
+          <div class="system-message">Connecting to hush…</div>
+        </div>
+
+        <form class="composer" id="messageForm">
+          <!-- Selected files appear here before sending -->
+          <div id="pendingSection" class="attachment-section hidden">
+            <div class="attachment-heading">
+              <span id="pendingCount">ATTACHMENTS</span>
+              <button type="button" class="remove-file" onclick="clearAttachments()">Remove all</button>
+            </div>
+            <div id="pendingFiles" class="attachment-list"></div>
+          </div>
+
+          <textarea id="messageInput" maxlength="200" rows="2"
+            placeholder="message…" aria-label="Message"></textarea>
+
+          <div class="composer-actions">
+            <div class="row">
+              <button type="button" title="Attach files" aria-label="Attach files"
+                onclick="document.getElementById('fileInput').click()">
+                <i class="ri-attachment-2" aria-hidden="true"></i>
+              </button>
+              <span id="charCount" class="char-count">0 / 200</span>
+            </div>
+            <button class="primary" id="sendButton" type="submit">Send</button>
+          </div>
+
+          <div id="sendStatus" class="hint" role="status"></div>
+        </form>
+      </div>
+
+      <aside class="sidebar">
+        <div class="side-heading">PARTICIPANTS</div>
+        <div class="peer"><span class="dot"></span><span id="myPeer">You</span></div>
+        <div class="peer">
+          <span class="dot" style="background:var(--muted)"></span>
+          <span id="otherPeer">Waiting for peer</span>
+        </div>
+
+        <hr class="side-rule">
+
+        <div class="side-heading">FILES</div>
+        <div class="hint">10 MB max per file</div>
+        <div class="hint">File transfer is not connected yet.</div>
+        <input id="fileInput" type="file" hidden multiple>
+        <button class="file-button" onclick="document.getElementById('fileInput').click()">
+          <i class="ri-add-line" aria-hidden="true"></i> Attach files
+        </button>
+        <div id="fileList"></div>
+
+        <hr class="side-rule">
+
+        <div class="side-heading">LIMITS</div>
+        <div class="hint">5 paired rooms max</div>
+        <div class="hint">3 hour lifetime</div>
+        <div class="hint">30 min rejoin window</div>
+        <div class="hint">200 char messages</div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<footer>hush.</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_ROOM_FILE_SIZE = 25 * 1024 * 1024;
+
+const SUPABASE_URL = "https://lvopdjiycgszambbfknh.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_cT0n_bVqe7P94BCrrqRDvQ_z7U_NRDr";
+
+const state = {
+  name: "", roomId: "", participantId: "", accessToken: "",
+  inviteCode: "", roomKey: null, keyText: "", invite: "",
+  pendingFiles: [], roomFileBytes: 0, sendTimers: new Set(),
+  objectUrls: new Set(), seenMessageIds: new Set(), pollTimer: null,
+  pollBusy: false, currentScreen: "home", expiresAt: null
+};
+
+function backendConfigured() {
+  return !SUPABASE_URL.includes("YOUR_PROJECT_REF") &&
+    !SUPABASE_PUBLISHABLE_KEY.includes("YOUR_SUPABASE_PUBLISHABLE_KEY") &&
+    /^https:\/\/[a-zA-Z0-9-]+\.supabase\.co$/.test(SUPABASE_URL);
+}
+
+function setScreen(screen) {
+  ["home", "waitingScreen", "chatScreen"].forEach(id => {
+    $(id).classList.toggle("hidden", id !== screen);
+  });
+  state.currentScreen = screen;
+  window.scrollTo(0, 0);
+}
+
+function setHeaderStatus(value) {
+  $("headerStatus").textContent = value;
+}
+
+function showConfigError(target) {
+  $(target).textContent =
+    "Add your Supabase project URL and publishable key near the top of this script first.";
+}
+
+async function callFunction(functionName, body) {
+  if (!backendConfigured()) {
+    throw Object.assign(new Error("BACKEND_NOT_CONFIGURED"), { code: "BACKEND_NOT_CONFIGURED" });
+  }
+
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/${functionName}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "apikey": SUPABASE_PUBLISHABLE_KEY },
+    body: JSON.stringify(body)
+  });
+
+  let data;
+  try { data = await response.json(); } catch { data = {}; }
+
+  if (!response.ok) {
+    const error = new Error(data.error || `HTTP_${response.status}`);
+    error.code = data.error || `HTTP_${response.status}`;
+    error.status = response.status;
+    throw error;
+  }
+  return data;
+}
+
+function bytesToBase64Url(bytes) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+}
+
+function base64UrlToBytes(value) {
+  const base64 = value.replaceAll("-", "+").replaceAll("_", "/");
+  const padded = base64 + "=".repeat((4 - base64.length % 4) % 4);
+  const binary = atob(padded);
+  return Uint8Array.from(binary, char => char.charCodeAt(0));
+}
+
+async function createRoomKey() {
+  const raw = crypto.getRandomValues(new Uint8Array(32));
+  const key = await crypto.subtle.importKey(
+    "raw", raw, { name: "AES-GCM" }, false, ["encrypt", "decrypt"]
+  );
+  return { key, text: bytesToBase64Url(raw) };
+}
+
+async function importRoomKey(keyText) {
+  const raw = base64UrlToBytes(keyText);
+  if (raw.length !== 32) throw new Error("INVALID_ENCRYPTION_KEY");
+  return crypto.subtle.importKey(
+    "raw", raw, { name: "AES-GCM" }, false, ["encrypt", "decrypt"]
+  );
+}
+
+async function encryptText(text) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const encrypted = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv }, state.roomKey, new TextEncoder().encode(text)
+  );
+  return `v1.${bytesToBase64Url(iv)}.${bytesToBase64Url(new Uint8Array(encrypted))}`;
+}
+
+async function decryptText(ciphertext) {
+  const parts = ciphertext.split(".");
+  if (parts.length !== 3 || parts[0] !== "v1") throw new Error("UNSUPPORTED_CIPHERTEXT");
+  const decrypted = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: base64UrlToBytes(parts[1]) },
+    state.roomKey,
+    base64UrlToBytes(parts[2])
+  );
+  return new TextDecoder().decode(decrypted);
+}
+
+function parseInvitation(raw) {
+  let fragment = raw.trim();
+  if (fragment.includes("://")) fragment = new URL(fragment).hash.slice(1);
+  else if (fragment.startsWith("#")) fragment = fragment.slice(1);
+
+  const splitAt = fragment.indexOf(".");
+  if (splitAt < 1) throw new Error("INVALID_INVITATION");
+  const inviteCode = fragment.slice(0, splitAt);
+  const keyText = fragment.slice(splitAt + 1);
+
+  if (!/^[A-Za-z0-9_-]{8,40}$/.test(inviteCode)) throw new Error("INVALID_INVITE_CODE");
+  if (!/^[A-Za-z0-9_-]{43}$/.test(keyText)) throw new Error("INVALID_ENCRYPTION_KEY");
+  return { inviteCode, keyText };
+}
+
+async function createRoom() {
+  const name = $("createName").value.trim();
+  $("createError").textContent = "";
+  if (!backendConfigured()) return showConfigError("createError");
+  if (!name) {
+    $("createError").textContent = "Enter a display name.";
+    $("createName").focus();
+    return;
+  }
+
+  const button = document.querySelector('button[onclick="createRoom()"]');
+  button.disabled = true;
+  try {
+    const keyInfo = await createRoomKey();
+    const result = await callFunction("hush-room", { action: "create", displayName: name });
+
+    state.name = name;
+    state.roomId = result.roomId;
+    state.participantId = result.participantId;
+    state.accessToken = result.accessToken;
+    state.inviteCode = result.inviteCode;
+    state.roomKey = keyInfo.key;
+    state.keyText = keyInfo.text;
+    state.expiresAt = result.expiresAt;
+    state.invite = `${location.origin}${location.pathname}#${state.inviteCode}.${state.keyText}`;
+
+    $("inviteLink").textContent = state.invite;
+    $("waitingError").textContent = "";
+    setHeaderStatus("waiting");
+    setScreen("waitingScreen");
+    waitForPairing();
+  } catch (error) {
+    $("createError").textContent = friendlyError(error);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function joinRoom() {
+  const name = $("joinName").value.trim();
+  const raw = $("joinSecret").value.trim();
+  $("joinError").textContent = "";
+  if (!backendConfigured()) return showConfigError("joinError");
+  if (!name) {
+    $("joinError").textContent = "Enter a display name.";
+    $("joinName").focus();
+    return;
+  }
+  if (!raw) {
+    $("joinError").textContent = "Paste the full invitation link.";
+    $("joinSecret").focus();
+    return;
+  }
+
+  const button = document.querySelector('button[onclick="joinRoom()"]');
+  button.disabled = true;
+  try {
+    const { inviteCode, keyText } = parseInvitation(raw);
+    const roomKey = await importRoomKey(keyText);
+    const result = await callFunction("hush-room", {
+      action: "join", displayName: name, inviteCode
+    });
+
+    state.name = name;
+    state.roomId = result.roomId;
+    state.participantId = result.participantId;
+    state.accessToken = result.accessToken;
+    state.inviteCode = inviteCode;
+    state.roomKey = roomKey;
+    state.keyText = keyText;
+    state.invite = `${location.origin}${location.pathname}#${inviteCode}.${keyText}`;
+    state.expiresAt = result.expiresAt || null;
+
+    openChat();
+    await pollMessages();
+    startPolling();
+  } catch (error) {
+    $("joinError").textContent = friendlyError(error);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function friendlyError(error) {
+  const code = error?.code || error?.message || "";
+  const messages = {
+    BACKEND_NOT_CONFIGURED: "Add your Supabase URL and publishable key in the script settings.",
+    ROOM_NOT_FOUND: "That invitation was not found or the room expired.",
+    ROOM_NOT_WAITING: "This room has already been joined or is no longer waiting.",
+    ROOM_CAPACITY_REACHED: "All five room slots are occupied. Try again later.",
+    INVALID_INVITATION: "Paste the full invitation link, including everything after #.",
+    INVALID_INVITE_CODE: "The invitation code is invalid.",
+    INVALID_ENCRYPTION_KEY: "The invitation's encryption key is missing or invalid.",
+    INVALID_ACCESS: "This participant token was rejected. Rejoin using a fresh invitation.",
+    ROOM_NOT_ACTIVE: "This room is not paired yet or has expired.",
+    INVALID_INPUT: "The backend rejected the request format.",
+    MESSAGE_SEND_FAILED: "Message could not be saved. Please try again."
+  };
+  return messages[code] || `Couldn't connect: ${code || "unknown error"}. Check the function logs and project settings.`;
+}
+
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const input = document.createElement("textarea");
+    input.value = text;
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.select();
+    const success = document.execCommand("copy");
+    input.remove();
+    if (!success) alert("Copy failed. Please copy manually.");
+  }
+}
+
+function copyInvite() {
+  if (state.invite) copyText(state.invite);
+}
+
+function copySecret() {
+  if (state.inviteCode && state.keyText) copyText(`${state.inviteCode}.${state.keyText}`);
+}
+
+async function waitForPairing() {
+  while (state.currentScreen === "waitingScreen" && state.roomId) {
+    if (state.expiresAt && Date.now() >= new Date(state.expiresAt).getTime()) {
+      $("waitingError").textContent = "This room expired. Create a new room.";
+      setHeaderStatus("expired");
+      return;
+    }
+
+    try {
+      await callFunction("hush-message", {
+        action: "list", roomId: state.roomId,
+        participantId: state.participantId, accessToken: state.accessToken
+      });
+      if (state.currentScreen !== "waitingScreen") return;
+      openChat();
+      await pollMessages();
+      startPolling();
+      return;
+    } catch (error) {
+      if (error.code === "ROOM_NOT_ACTIVE") {
+        $("waitingError").textContent = "Still waiting for the other person…";
+      } else {
+        $("waitingError").textContent = friendlyError(error);
+      }
+    }
+    await new Promise(resolve => setTimeout(resolve, 2500));
+  }
+}
+
+function openChat() {
+  $("roomLabel").textContent = state.roomId.slice(0, 8);
+  $("roomStatus").textContent = "connected · encrypted text";
+  $("myPeer").textContent = state.name;
+  $("otherPeer").textContent = "Room participant";
+  $("messages").replaceChildren();
+  const note = document.createElement("div");
+  note.className = "system-message";
+  note.textContent = "Messages are encrypted in your browser before they reach the server.";
+  $("messages").appendChild(note);
+  $("fileList").replaceChildren();
+  $("sendStatus").textContent = "";
+  $("messageInput").value = "";
+  clearAttachments();
+  updateCount();
+  setHeaderStatus("connected");
+  setScreen("chatScreen");
+}
+
+function startPolling() {
+  if (state.pollTimer) clearInterval(state.pollTimer);
+  state.pollTimer = setInterval(() => {
+    if (state.currentScreen === "chatScreen") pollMessages();
+  }, 1800);
+}
+
+function stopPolling() {
+  if (state.pollTimer) clearInterval(state.pollTimer);
+  state.pollTimer = null;
+}
+
+async function pollMessages() {
+  if (state.pollBusy || !state.roomId || !state.accessToken) return;
+  state.pollBusy = true;
+  try {
+    const result = await callFunction("hush-message", {
+      action: "list", roomId: state.roomId,
+      participantId: state.participantId, accessToken: state.accessToken
+    });
+
+    for (const message of (result.messages || [])) {
+      if (state.seenMessageIds.has(message.id)) continue;
+      state.seenMessageIds.add(message.id);
+      try {
+        const text = await decryptText(message.ciphertext);
+        const mine = message.sender_id === state.participantId;
+        addMessage(mine ? state.name : "Peer", text, [], mine, message.created_at);
+      } catch {
+        const note = document.createElement("div");
+        note.className = "system-message";
+        note.textContent = "A message could not be decrypted. Check that both people used the same invitation.";
+        $("messages").appendChild(note);
+      }
+    }
+  } catch (error) {
+    if (error.code === "ROOM_NOT_ACTIVE" && state.currentScreen === "chatScreen") {
+      $("roomStatus").textContent = "not active · waiting or expired";
+    } else if (state.currentScreen === "chatScreen") {
+      $("sendStatus").textContent = friendlyError(error);
+    }
+  } finally {
+    state.pollBusy = false;
+  }
+}
+
+/* File uploads are deliberately disabled until encrypted Storage upload/download
+   and deletion are implemented. */
+function getFileIcon(fileName) {
+  const ext = fileName.split(".").pop().toLowerCase();
+  if (["zip", "zipx"].includes(ext)) return { icon: "ri-file-zip-line", type: "zip" };
+  if (ext === "pdf") return { icon: "ri-file-pdf-2-line", type: "pdf" };
+  return { icon: "ri-file-text-line", type: "content" };
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
+
+function updateCount() {
+  const length = [...$("messageInput").value].length;
+  $("charCount").textContent = `${length} / 200`;
+  $("sendButton").disabled =
+    (length === 0 && state.pendingFiles.length === 0) || length > 200;
+}
+
+$("messageInput").addEventListener("input", updateCount);
+
+function makeFileCard(file) {
+  const { icon, type } = getFileIcon(file.name);
+  const card = document.createElement("div");
+  card.className = "attachment";
+  const iconBox = document.createElement("div");
+  iconBox.className = "file-icon" + (type === "content" ? "" : " " + type);
+  const iconElement = document.createElement("i");
+  iconElement.className = icon;
+  iconElement.setAttribute("aria-hidden", "true");
+  iconBox.appendChild(iconElement);
+  const details = document.createElement("div");
+  details.className = "attachment-info";
+  const name = document.createElement("div");
+  name.className = "file-name";
+  name.textContent = file.name;
+  const size = document.createElement("div");
+  size.className = "file-size";
+  size.textContent = formatBytes(file.size);
+  details.append(name, size);
+  card.append(iconBox, details);
+  return card;
+}
+
+function renderPendingFiles() {
+  const section = $("pendingSection");
+  const container = $("pendingFiles");
+  container.replaceChildren();
+  section.classList.toggle("hidden", state.pendingFiles.length === 0);
+  $("pendingCount").textContent = `ATTACHMENTS (${state.pendingFiles.length})`;
+
+  state.pendingFiles.forEach((file, index) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "attachment";
+    const card = makeFileCard(file);
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "remove-file";
+    remove.title = `Remove ${file.name}`;
+    remove.setAttribute("aria-label", `Remove ${file.name}`);
+    remove.innerHTML = '<i class="ri-close-line" aria-hidden="true"></i>';
+    remove.addEventListener("click", () => removeAttachment(index));
+    wrapper.append(...card.childNodes);
+    wrapper.appendChild(remove);
+    container.appendChild(wrapper);
+  });
+  updateCount();
+}
+
+function removeAttachment(index) {
+  state.pendingFiles.splice(index, 1);
+  renderPendingFiles();
+}
+
+function clearAttachments() {
+  state.pendingFiles = [];
+  renderPendingFiles();
+}
+
+$("fileInput").addEventListener("change", event => {
+  const selected = [...event.target.files];
+  const errors = [];
+  for (const file of selected) {
+    if (file.size > MAX_FILE_SIZE) {
+      errors.push(`${file.name}: exceeds the 10 MB per-file limit.`);
+      continue;
+    }
+    if (state.pendingFiles.some(existing =>
+      existing.name === file.name && existing.size === file.size &&
+      existing.lastModified === file.lastModified
+    )) continue;
+
+    const pendingTotal = state.pendingFiles.reduce((sum, item) => sum + item.size, 0);
+    if (pendingTotal + state.roomFileBytes + file.size > MAX_ROOM_FILE_SIZE) {
+      errors.push(`${file.name}: the room's 25 MB file limit would be exceeded.`);
+      continue;
+    }
+    state.pendingFiles.push(file);
+  }
+  renderPendingFiles();
+  event.target.value = "";
+  $("sendStatus").textContent = errors.length
+    ? errors.join(" ")
+    : "Files are selected locally, but encrypted file transfer is not implemented yet.";
+});
+
+function addMessage(name, text, files, mine, timestamp = new Date()) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "message" + (mine ? " mine" : "");
+  const sender = document.createElement("div");
+  sender.className = "sender";
+  sender.textContent = name;
+  wrapper.appendChild(sender);
+
+  if (text) {
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = text;
+    wrapper.appendChild(bubble);
+  }
+
+  const time = document.createElement("div");
+  time.className = "message-time";
+  time.textContent = new Date(timestamp).toLocaleTimeString([], {
+    hour: "2-digit", minute: "2-digit"
+  });
+  wrapper.appendChild(time);
+  $("messages").appendChild(wrapper);
+  $("messages").scrollTop = $("messages").scrollHeight;
+}
+
+function delayFor(length) {
+  if (length <= 30) return 100;
+  if (length <= 70) return 300;
+  if (length <= 150) return 700;
+  return 1500;
+}
+
+$("messageForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const text = $("messageInput").value.trimEnd();
+  const length = [...text].length;
+  const files = [...state.pendingFiles];
+
+  if (files.length) {
+    $("sendStatus").textContent =
+      "Encrypted file transfers aren't implemented yet. Remove attachments to send text only.";
+    return;
+  }
+  if (!text || length > 200 || !state.roomKey) return;
+
+  const delay = delayFor(length);
+  $("messageInput").value = "";
+  updateCount();
+  $("sendButton").disabled = true;
+  $("sendStatus").textContent = `Sending in ${(delay / 1000).toFixed(1)} seconds…`;
+
+  const timer = setTimeout(async () => {
+    state.sendTimers.delete(timer);
+    if (state.currentScreen !== "chatScreen") return;
+    try {
+      const ciphertext = await encryptText(text);
+      const result = await callFunction("hush-message", {
+        action: "send", roomId: state.roomId,
+        participantId: state.participantId, accessToken: state.accessToken,
+        ciphertext
+      });
+      if (result.message?.id) state.seenMessageIds.add(result.message.id);
+      addMessage(state.name, text, [], true, result.message?.created_at || new Date());
+      $("sendStatus").textContent = "Sent · encrypted";
+    } catch (error) {
+      $("sendStatus").textContent = friendlyError(error);
+      $("messageInput").value = text;
+    } finally {
+      updateCount();
+    }
+  }, delay);
+  state.sendTimers.add(timer);
+});
+
+function leaveRoom() {
+  stopPolling();
+  state.sendTimers.forEach(clearTimeout);
+  state.sendTimers.clear();
+  state.objectUrls.forEach(url => URL.revokeObjectURL(url));
+  state.objectUrls.clear();
+
+  state.name = "";
+  state.roomId = "";
+  state.participantId = "";
+  state.accessToken = "";
+  state.inviteCode = "";
+  state.roomKey = null;
+  state.keyText = "";
+  state.invite = "";
+  state.pendingFiles = [];
+  state.roomFileBytes = 0;
+  state.seenMessageIds.clear();
+  state.expiresAt = null;
+
+  $("fileList").replaceChildren();
+  $("createError").textContent = "";
+  $("joinError").textContent = "";
+  $("waitingError").textContent = "";
+  $("sendStatus").textContent = "";
+  $("messages").replaceChildren();
+  clearAttachments();
+  setHeaderStatus(backendConfigured() ? "ready" : "setup needed");
+  setScreen("home");
+}
+
+function goHome() {
+  leaveRoom();
+}
+
+setHeaderStatus(backendConfigured() ? "ready" : "setup needed");
+</script>
+</body>
+</html>
