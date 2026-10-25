@@ -604,6 +604,126 @@ footer {
     transition-duration: .01ms !important;
   }
 }
+/* Invitation name popup — Catppuccin Mocha */
+.name-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  background: rgba(17, 17, 27, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .2s ease, visibility .2s ease;
+}
+
+.name-modal-backdrop[hidden] {
+  display: none;
+}
+
+.name-modal {
+  width: min(100%, 360px);
+  padding: 25px;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border: 1px solid #45475a;
+  border-radius: 12px;
+  box-shadow: 0 24px 90px rgba(0, 0, 0, .55);
+  animation: nameModalIn .22s ease-out;
+}
+
+.name-modal-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  background: #313244;
+  color: #cba6f7;
+  font-size: 21px;
+}
+
+.name-modal h2 {
+  font-size: 19px;
+  letter-spacing: -.6px;
+  margin-bottom: 7px;
+  color: #cdd6f4;
+}
+
+.name-modal p {
+  color: #a6adc8;
+  font-size: 12px;
+  margin-bottom: 21px;
+}
+
+.name-modal input {
+  padding: 12px;
+  border-radius: 7px;
+  border-color: #45475a;
+  background: #181825;
+  font-size: 13px;
+}
+
+.name-modal input:focus {
+  outline: 2px solid #cba6f7;
+  outline-offset: 1px;
+  border-color: #cba6f7;
+}
+
+.name-modal-actions {
+  display: flex;
+  gap: 9px;
+  margin-top: 17px;
+}
+
+.name-modal-actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 7px;
+}
+
+.name-modal-actions .primary {
+  background: #cba6f7;
+  border-color: #cba6f7;
+  color: #1e1e2e;
+}
+
+.name-modal-actions .primary:hover {
+  background: #d8b8ff;
+}
+
+.name-modal-error {
+  min-height: 0;
+  margin-top: 10px;
+  color: #f38ba8;
+  font-size: 11px;
+}
+
+.name-modal-error:empty {
+  display: none;
+}
+
+@keyframes nameModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .name-modal {
+    animation: none;
+  }
+}
 </style>
 </head>
 
@@ -654,6 +774,49 @@ footer {
   <div class="notice">
     Backend chat setup. Text is encrypted in your browser; file transfers are not connected yet.
   </div>
+  <!-- Invitation name modal -->
+<div
+  id="nameModalBackdrop"
+  class="name-modal-backdrop"
+  hidden
+>
+  <form
+    class="name-modal"
+    id="nameModalForm"
+    aria-labelledby="nameModalTitle"
+  >
+    <div class="name-modal-icon">
+      <i class="ri-chat-smile-3-line"></i>
+    </div>
+
+    <h2 id="nameModalTitle">What's your name?</h2>
+    <p>Choose a display name to join this private room.</p>
+
+    <label for="inviteDisplayName">Display name</label>
+    <input
+      id="inviteDisplayName"
+      maxlength="24"
+      placeholder="Enter your name..."
+      autocomplete="nickname"
+      required
+    >
+
+    <div
+      id="nameModalError"
+      class="name-modal-error"
+      role="alert"
+    ></div>
+
+    <div class="name-modal-actions">
+      <button type="button" onclick="cancelNameModal()">
+        Cancel
+      </button>
+      <button type="submit" class="primary" id="nameModalJoin">
+        Join room
+      </button>
+    </div>
+  </form>
+</div>
 </main>
 
 <main id="waitingScreen" class="hidden">
@@ -1371,6 +1534,78 @@ async function handleInviteOnOpen() {
     // Join immediately.
     await joinRoom();
 
+  } catch (error) {
+    $("joinError").textContent = friendlyError(error);
+    setHeaderStatus("ready");
+  }
+}
+
+function openNameModal() {
+  $("nameModalError").textContent = "";
+  $("inviteDisplayName").value = "";
+  $("nameModalBackdrop").hidden = false;
+
+  requestAnimationFrame(() => {
+    $("inviteDisplayName").focus();
+  });
+}
+
+function cancelNameModal() {
+  $("nameModalBackdrop").hidden = true;
+  setHeaderStatus(backendConfigured() ? "ready" : "setup needed");
+}
+
+$("nameModalForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const name = $("inviteDisplayName").value.trim();
+
+  if (!name) {
+    $("nameModalError").textContent = "Please enter a name.";
+    $("inviteDisplayName").focus();
+    return;
+  }
+
+  const joinButton = $("nameModalJoin");
+  joinButton.disabled = true;
+  joinButton.textContent = "Checking...";
+
+  try {
+    // Put the name and invitation into the existing join form fields.
+    $("joinName").value = name.slice(0, 24);
+    $("joinSecret").value = location.href;
+
+    // Close the popup and use your existing joinRoom() function.
+    $("nameModalBackdrop").hidden = true;
+    await joinRoom();
+  } finally {
+    joinButton.disabled = false;
+    joinButton.textContent = "Join room";
+  }
+});
+
+async function handleInviteOnOpen() {
+  if (!location.hash || location.hash === "#") return;
+
+  setHeaderStatus("checking invitation");
+
+  try {
+    if (!backendConfigured()) {
+      throw Object.assign(new Error("BACKEND_NOT_CONFIGURED"), {
+        code: "BACKEND_NOT_CONFIGURED"
+      });
+    }
+
+    const { inviteCode } = parseInvitation(location.href);
+
+    // Validate first. Don't ask for a name for an invalid invitation.
+    await callFunction("hush-room", {
+      action: "check",
+      inviteCode
+    });
+
+    openNameModal();
+    setHeaderStatus("invitation ready");
   } catch (error) {
     $("joinError").textContent = friendlyError(error);
     setHeaderStatus("ready");
