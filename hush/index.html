@@ -1026,7 +1026,18 @@ async function callFunction(functionName, body) {
   }
   return data;
 }
+  
+function getHushDeviceId() {
+  const key = "hush_device_id";
+  let id = localStorage.getItem(key);
 
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(key, id);
+  }
+
+  return id;
+}
 function bytesToBase64Url(bytes) {
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
