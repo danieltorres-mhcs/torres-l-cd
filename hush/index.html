@@ -1327,7 +1327,58 @@ function goHome() {
   leaveRoom();
 }
 
+
+async function handleInviteOnOpen() {
+  // No invitation fragment? Keep the normal homepage.
+  if (!location.hash || location.hash === "#") return;
+
+  $("joinError").textContent = "";
+  $("joinSecret").value = location.href;
+  setHeaderStatus("checking invitation");
+
+  try {
+    if (!backendConfigured()) {
+      throw new Error("BACKEND_NOT_CONFIGURED");
+    }
+
+    // Parse the link before doing anything else.
+    const { inviteCode } = parseInvitation(location.href);
+
+    // Check the room WITHOUT joining it.
+    await callFunction("hush-room", {
+      action: "check",
+      inviteCode
+    });
+
+    // Only ask for a name if the invitation is valid.
+    const name = window.prompt("What's your name?");
+
+    // They cancelled the prompt.
+    if (name === null) {
+      setHeaderStatus("ready");
+      return;
+    }
+
+    if (!name.trim()) {
+      $("joinError").textContent = "Enter a name in the Join room section to continue.";
+      setHeaderStatus("ready");
+      return;
+    }
+
+    $("joinName").value = name.trim().slice(0, 24);
+    $("joinSecret").value = location.href;
+
+    // Join immediately.
+    await joinRoom();
+
+  } catch (error) {
+    $("joinError").textContent = friendlyError(error);
+    setHeaderStatus("ready");
+  }
+}
+
 setHeaderStatus(backendConfigured() ? "ready" : "setup needed");
+handleInviteOnOpen();
 </script>
 </body>
 </html>
