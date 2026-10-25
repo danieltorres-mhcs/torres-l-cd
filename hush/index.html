@@ -1115,7 +1115,11 @@ async function createRoom() {
   button.disabled = true;
   try {
     const keyInfo = await createRoomKey();
-    const result = await callFunction("hush-room", { action: "create", displayName: name });
+    const result = await callFunction("hush-room", {
+      action: "create",
+      displayName: name,
+      deviceId: getHushDeviceId()
+    });
 
     state.name = name;
     state.roomId = result.roomId;
@@ -1162,7 +1166,10 @@ async function joinRoom() {
     const { inviteCode, keyText } = parseInvitation(raw);
     const roomKey = await importRoomKey(keyText);
     const result = await callFunction("hush-room", {
-      action: "join", displayName: name, inviteCode
+      action: "join",
+      displayName: name,
+      inviteCode,
+      deviceId: getHushDeviceId()
     });
 
     state.name = name;
