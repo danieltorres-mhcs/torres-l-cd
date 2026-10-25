@@ -1077,6 +1077,7 @@ async function createRoom() {
     state.inviteCode = result.inviteCode;
     state.roomKey = keyInfo.key;
     state.keyText = keyInfo.text;
+    state.peerName = "";
     state.expiresAt = result.expiresAt;
     state.invite = `${location.origin}${location.pathname}#${state.inviteCode}.${state.keyText}`;
 
@@ -1211,7 +1212,7 @@ function openChat() {
   $("roomLabel").textContent = state.roomId.slice(0, 8);
   $("roomStatus").textContent = "connected · encrypted text";
   $("myPeer").textContent = state.name;
-  $("otherPeer").textContent = "Room participant";
+  $("otherPeer").textContent = state.peerName || "Connecting…";
   $("messages").replaceChildren();
   const note = document.createElement("div");
   note.className = "system-message";
@@ -1246,14 +1247,23 @@ async function pollMessages() {
       action: "list", roomId: state.roomId,
       participantId: state.participantId, accessToken: state.accessToken
     });
-
+    if (result.peerName) {
+      state.peerName = result.peerName;
+      $("otherPeer").textContent = result.peerName;
+    }
     for (const message of (result.messages || [])) {
       if (state.seenMessageIds.has(message.id)) continue;
       state.seenMessageIds.add(message.id);
       try {
         const text = await decryptText(message.ciphertext);
         const mine = message.sender_id === state.participantId;
-        addMessage(mine ? state.name : "Peer", text, [], mine, message.created_at);
+        addMessage(
+          mine ? state.name : (state.peerName || "Connecting…"),
+          text,
+          [],
+          mine,
+          message.created_at
+        );
       } catch {
         const note = document.createElement("div");
         note.className = "system-message";
