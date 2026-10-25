@@ -1289,7 +1289,7 @@ function renderParticipants(participants) {
     if (participant.id === state.participantId) {
       const you = document.createElement("span");
       you.className = "participant-you";
-      you.textContent = "YOU";
+      you.textContent = " (YOU)";
       item.appendChild(you);
     }
     list.appendChild(item);
