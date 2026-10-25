@@ -746,7 +746,7 @@ footer {
 
     <div class="field">
       <label for="createName">Display name</label>
-      <input id="createName" maxlength="24" placeholder="your name" autocomplete="nickname">
+      <input id="createName" maxlength="100" placeholder="your name" autocomplete="nickname">
     </div>
 
     <button class="primary full" onclick="createRoom()">Create room</button>
@@ -759,7 +759,7 @@ footer {
 
     <div class="field">
       <label for="joinName">Display name</label>
-      <input id="joinName" maxlength="24" placeholder="your name" autocomplete="nickname">
+      <input id="joinName" maxlength="100" placeholder="your name" autocomplete="nickname">
     </div>
 
     <div class="field">
@@ -795,7 +795,7 @@ footer {
     <label for="inviteDisplayName">Display name</label>
     <input
       id="inviteDisplayName"
-      maxlength="24"
+      maxlength="100"
       placeholder="Enter your name..."
       autocomplete="nickname"
       required
@@ -821,7 +821,7 @@ footer {
 
 <main id="waitingScreen" class="hidden">
   <h1>Room created</h1>
-  <p class="subtitle">Share the invitation with one other person.</p>
+  <p class="subtitle">Share the invitation with other participants.</p>
 
   <section class="panel">
     <label>Invitation link</label>
@@ -835,7 +835,7 @@ footer {
     <div class="waiting">
       <div class="spinner"></div>
       <div>
-        <div>Waiting for peer</div>
+        <div>Waiting for participants</div>
         <div class="hint">Pending rooms don't occupy an active slot.</div>
       </div>
     </div>
@@ -878,8 +878,8 @@ footer {
             <div id="pendingFiles" class="attachment-list"></div>
           </div>
 
-          <textarea id="messageInput" maxlength="200" rows="2"
-            placeholder="message…" aria-label="Message"></textarea>
+              <textarea id="messageInput" rows="2"
+      placeholder="message…" aria-label="Message"></textarea>
 
           <div class="composer-actions">
             <div class="row">
@@ -887,7 +887,7 @@ footer {
                 onclick="document.getElementById('fileInput').click()">
                 <i class="ri-attachment-2" aria-hidden="true"></i>
               </button>
-              <span id="charCount" class="char-count">0 / 200</span>
+              <span id="charCount" class="char-count">0 / 25</span>
             </div>
             <button class="primary" id="sendButton" type="submit">Send</button>
           </div>
@@ -897,13 +897,8 @@ footer {
       </div>
 
       <aside class="sidebar">
-        <div class="side-heading">PARTICIPANTS</div>
-        <div class="peer"><span class="dot"></span><span id="myPeer">You</span></div>
-        <div class="peer">
-          <span class="dot" style="background:var(--muted)"></span>
-          <span id="otherPeer">Waiting for peer</span>
-        </div>
-
+            <div class="side-heading">PARTICIPANTS · MAX 5</div>
+    <div id="participantList"></div>
         <hr class="side-rule">
 
         <div class="side-heading">FILES</div>
@@ -921,7 +916,7 @@ footer {
         <div class="hint">5 paired rooms max</div>
         <div class="hint">3 hour lifetime</div>
         <div class="hint">30 min rejoin window</div>
-        <div class="hint">200 char messages</div>
+        <div class="hint">25 character messages</div>
       </aside>
     </div>
   </div>
@@ -931,6 +926,32 @@ footer {
 
 <script>
 const $ = id => document.getElementById(id);
+const MAX_NAME_CHARS = 25;
+const MAX_MESSAGE_CHARS = 25;
+
+const allowedChar =
+  /^[\p{Script_Extensions=Latin}\p{Script_Extensions=Greek}\p{Script_Extensions=Cyrillic}\p{Script_Extensions=Han}\p{Script_Extensions=Hiragana}\p{Script_Extensions=Katakana}\p{Script_Extensions=Hangul}\p{Script_Extensions=Arabic}\p{Script_Extensions=Hebrew}\p{Script_Extensions=Devanagari}\p{Script_Extensions=Thai}\p{M}\p{N}\p{P}\p{Z}\p{Sc}\p{Extended_Pictographic}\p{Emoji_Modifier}\p{Regional_Indicator}\u200D\uFE0E\uFE0F\u20E3\r\n\t]$/u;
+
+function splitChars(text) {
+  if (typeof Intl.Segmenter === "function") {
+    return [...new Intl.Segmenter(undefined, {
+      granularity: "grapheme"
+    }).segment(text)].map(item => item.segment);
+  }
+  return Array.from(text);
+}
+
+function filterCharacters(text, maxLength) {
+  return splitChars(text)
+    .filter(cluster =>
+      [...cluster].every(char => allowedChar.test(char))
+    )
+    .slice(0, maxLength)
+    .join("");
+}
+function sanitizeMessage(text) {
+  return filterCharacters(text, MAX_MESSAGE_CHARS);
+}
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const MAX_ROOM_FILE_SIZE = 25 * 1024 * 1024;
 
@@ -944,7 +965,22 @@ const state = {
   objectUrls: new Set(), seenMessageIds: new Set(), pollTimer: null,
   pollBusy: false, currentScreen: "home", expiresAt: null
 };
+function setupNameInput(id) {
+  const input = $(id);
+  input.maxLength = 100; // JavaScript applies the actual 25-character limit.
 
+  input.addEventListener("input", () => {
+    const filtered = filterCharacters(input.value, MAX_NAME_CHARS);
+
+    if (input.value !== filtered) {
+      input.value = filtered;
+    }
+  });
+}
+
+setupNameInput("createName");
+setupNameInput("joinName");
+setupNameInput("inviteDisplayName");
 function backendConfigured() {
   return !SUPABASE_URL.includes("YOUR_PROJECT_REF") &&
     !SUPABASE_PUBLISHABLE_KEY.includes("YOUR_SUPABASE_PUBLISHABLE_KEY") &&
@@ -1055,7 +1091,7 @@ function parseInvitation(raw) {
 }
 
 async function createRoom() {
-  const name = $("createName").value.trim();
+  const name = filterCharacters($("createName").value, MAX_NAME_CHARS).trim();
   $("createError").textContent = "";
   if (!backendConfigured()) return showConfigError("createError");
   if (!name) {
@@ -1094,7 +1130,7 @@ async function createRoom() {
 }
 
 async function joinRoom() {
-  const name = $("joinName").value.trim();
+  const name = filterCharacters($("joinName").value, MAX_NAME_CHARS).trim();
   const raw = $("joinSecret").value.trim();
   $("joinError").textContent = "";
   if (!backendConfigured()) return showConfigError("joinError");
@@ -1302,10 +1338,14 @@ function formatBytes(bytes) {
 }
 
 function updateCount() {
-  const length = [...$("messageInput").value].length;
-  $("charCount").textContent = `${length} / 200`;
+  const input = $("messageInput");
+  const cleaned = sanitizeMessage(input.value);
+  if (input.value !== cleaned) input.value = cleaned;
+
+  const length = splitChars(input.value).length;
+  $("charCount").textContent = `${length} / ${MAX_MESSAGE_CHARS}`;
   $("sendButton").disabled =
-    (length === 0 && state.pendingFiles.length === 0) || length > 200;
+    (length === 0 && state.pendingFiles.length === 0);
 }
 
 $("messageInput").addEventListener("input", updateCount);
@@ -1429,8 +1469,8 @@ function delayFor(length) {
 
 $("messageForm").addEventListener("submit", event => {
   event.preventDefault();
-  const text = $("messageInput").value.trimEnd();
-  const length = [...text].length;
+  const text = sanitizeMessage($("messageInput").value).trimEnd();
+  const length = splitChars(text).length;
   const files = [...state.pendingFiles];
 
   if (files.length) {
@@ -1438,7 +1478,7 @@ $("messageForm").addEventListener("submit", event => {
       "Encrypted file transfers aren't implemented yet. Remove attachments to send text only.";
     return;
   }
-  if (!text || length > 200 || !state.roomKey) return;
+  if (!text || length > MAX_MESSAGE_CHARS || !state.roomKey) return;
 
   const delay = delayFor(length);
   $("messageInput").value = "";
@@ -1572,7 +1612,10 @@ function cancelNameModal() {
 $("nameModalForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const name = $("inviteDisplayName").value.trim();
+  const name = filterCharacters(
+    $("inviteDisplayName").value,
+    MAX_NAME_CHARS
+  ).trim();
 
   if (!name) {
     $("nameModalError").textContent = "Please enter a name.";
@@ -1586,7 +1629,7 @@ $("nameModalForm").addEventListener("submit", async (event) => {
 
   try {
     // Put the name and invitation into the existing join form fields.
-    $("joinName").value = name.slice(0, 24);
+    $("joinName").value = name;
     $("joinSecret").value = location.href;
 
     // Close the popup and use your existing joinRoom() function.
