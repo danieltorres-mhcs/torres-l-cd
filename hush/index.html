@@ -1251,6 +1251,10 @@ async function pollMessages() {
       state.peerName = result.peerName;
       $("otherPeer").textContent = result.peerName;
     }
+    if (result.peerName) {
+      state.peerName = result.peerName;
+      $("otherPeer").textContent = result.peerName;
+    }
     for (const message of (result.messages || [])) {
       if (state.seenMessageIds.has(message.id)) continue;
       state.seenMessageIds.add(message.id);
