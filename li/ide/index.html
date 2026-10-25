@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -91,16 +92,19 @@
 
     button:hover, .file-label:hover { background: #414854; }
     button:active { background: #252a31; }
+
     button.primary {
       color: #eaf5ff;
       background: #365d7d;
       border-color: #27465f;
     }
+
     button.primary:hover { background: #416d91; }
     button:disabled { opacity: .45; cursor: default; }
     input[type=file] { display: none; }
 
     .toolbar-spacer { flex: 1; }
+
     .status-pill {
       color: #9da5b4;
       border: 1px solid #3a404a;
@@ -262,22 +266,33 @@
       color: #858d9b;
       font-size: 11px;
     }
+
     .footer .left { flex: 1; }
     .footer .accent { color: var(--atom-blue); }
 
     @media (max-width: 760px) {
-      .workspace { grid-template-columns: 1fr; grid-template-rows: minmax(230px, 1fr) minmax(230px, 1fr); }
+      .workspace {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(230px, 1fr) minmax(230px, 1fr);
+      }
+
       .console { height: 125px; flex-basis: 125px; }
       .title-hint { display: none; }
     }
-  
+
     /* Responsive compatibility improvements */
     * { box-sizing: border-box; }
+
     html, body { min-width: 0; width: 100%; }
     body { overflow-x: hidden; }
+
     .app, .workspace, .pane, .toolbar, .statusbar { min-width: 0; }
     .workspace { align-items: stretch; }
-    textarea, pre, .console-output, .status, .pane-header { min-width: 0; }
+
+    textarea, pre, .console-output, .status, .pane-header {
+      min-width: 0;
+    }
+
     textarea {
       width: 100%;
       max-width: 100%;
@@ -286,36 +301,48 @@
       line-height: 1.5;
       tab-size: 2;
     }
+
     button, input, select { max-width: 100%; }
     .toolbar { flex-wrap: wrap; }
+
     @media (max-width: 760px) {
       .app { padding: 10px; }
+
       .workspace {
         grid-template-columns: minmax(0, 1fr);
         grid-template-rows: minmax(220px, 42vh) minmax(220px, 42vh);
       }
+
       .pane { min-width: 0; }
       .toolbar { gap: 8px; }
       button { min-height: 38px; }
       .statusbar { flex-wrap: wrap; }
     }
+
     @media (max-width: 420px) {
       .app { padding: 7px; }
-      .workspace { grid-template-rows: minmax(190px, 38vh) minmax(190px, 38vh); }
+
+      .workspace {
+        grid-template-rows: minmax(190px, 38vh) minmax(190px, 38vh);
+      }
+
       textarea { font-size: 12px; }
       button { flex: 1 1 auto; }
     }
 
-  
     /* Console and toolbar polish */
-    .console, .console-output, #console, #consoleOutput, .console-log, .console-head {
+    .console, .console-output, #console, #consoleOutput,
+    .console-log, .console-head {
       font-family: "JetBrains Mono", Menlo, Monaco, "Courier New", monospace;
     }
-    .console button, .console-header button, button[aria-label*="Clear"], button[title*="Clear"] {
+
+    .console button, .console-header button,
+    button[aria-label*="Clear"], button[title*="Clear"] {
       padding: 7px 12px;
       margin: 3px 4px 3px 0;
       line-height: 1.35;
     }
+
     .console-header, .console-toolbar {
       display: flex;
       align-items: center;
@@ -324,23 +351,82 @@
       flex-wrap: wrap;
       padding: 6px 8px;
     }
+
     .tab, .pane-tab, [role="tab"] {
       cursor: pointer;
       user-select: none;
     }
-    .tab:focus-visible, .pane-tab:focus-visible, [role="tab"]:focus-visible {
+
+    .tab:focus-visible, .pane-tab:focus-visible,
+    [role="tab"]:focus-visible {
       outline: 2px solid var(--accent, #6ca6ff);
       outline-offset: 2px;
     }
+
     @media (max-width: 760px) {
       .console-header, .console-toolbar { align-items: stretch; }
-      .console button, .console-header button, button[aria-label*="Clear"], button[title*="Clear"] {
+
+      .console button, .console-header button,
+      button[aria-label*="Clear"], button[title*="Clear"] {
         padding: 9px 12px;
       }
     }
 
+    /* Syntax highlighting: editor layers */
+    .highlight-view {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 43px;
+      z-index: 1;
+      margin: 0;
+      padding: 12px 14px;
+      border: 0;
+      overflow: hidden;
+      pointer-events: none;
+      background: var(--atom-bg);
+      color: var(--atom-text);
+      white-space: pre;
+      overflow-wrap: normal;
+      font: 13px/1.5 "JetBrains Mono", Menlo, Monaco, "Courier New", monospace;
+      tab-size: 2;
+    }
+
+    .editor-wrap textarea {
+      position: relative;
+      z-index: 2;
+      background: transparent;
+      color: transparent;
+      caret-color: #abb2bf;
+      font-family: "JetBrains Mono", Menlo, Monaco, "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .editor-wrap textarea::selection {
+      background: #414958;
+      color: transparent;
+    }
+
+    .syntax-keyword { color: #c678dd; }
+    .syntax-string { color: #98c379; }
+    .syntax-number { color: #d19a66; }
+    .syntax-comment { color: #5c6370; font-style: italic; }
+    .syntax-function { color: #61afef; }
+    .syntax-property { color: #e06c75; }
+    .syntax-operator { color: #56b6c2; }
+    .syntax-punctuation { color: #abb2bf; }
+    .syntax-boolean { color: #d19a66; }
+    .syntax-identifier { color: #e5c07b; }
+
+    .syntax-li-zero { color: #61afef; }
+    .syntax-li-one { color: #c678dd; }
+    .syntax-li-header { color: #e5c07b; }
+    .syntax-li-note { color: #5c6370; font-style: italic; }
   </style>
-<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/danieltorres-mhcs/torres-l-cd/refs/heads/main/faviconli-512x512.png">
+
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/danieltorres-mhcs/torres-l-cd/refs/heads/main/faviconli-512x512.png">
   <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/danieltorres-mhcs/torres-l-cd/refs/heads/main/faviconli-512x512.png">
   <script src="https://cdn.jsdelivr.net/npm/reicon-agent/cdn/reicon.js" defer></script>
 </head>
@@ -373,6 +459,7 @@
       </div>
       <div class="editor-wrap">
         <div class="gutter" id="jsGutter">1</div>
+        <pre class="highlight-view" id="jsHighlight" aria-hidden="true"></pre>
         <textarea id="jsInput" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="JavaScript source" wrap="off">console.log("Hello from lI!");
 </textarea>
       </div>
@@ -385,6 +472,7 @@
       </div>
       <div class="editor-wrap">
         <div class="gutter" id="liGutter">1</div>
+        <pre class="highlight-view" id="liHighlight" aria-hidden="true"></pre>
         <textarea id="liOutput" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="lI source" wrap="off" placeholder="Encoded lI output will appear here…"></textarea>
       </div>
     </section>
@@ -416,10 +504,129 @@
     let lastOutput = "";
     let lastOutputType = "li";
 
+    // Syntax highlighting
+    const jsHighlight = $("jsHighlight");
+    const liHighlight = $("liHighlight");
+
+    function escapeHTML(text) {
+      return text.replace(/[&<>"']/g, ch => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[ch]);
+    }
+
+    function paintJS(source) {
+      const pattern = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\[\s\S]|[^`])*`|\b\d+(?:\.\d+)?\b|\b(?:const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|new|class|extends|constructor|this|super|async|await|try|catch|finally|throw|typeof|instanceof|in|of|delete|void|yield|import|export|from|default|as|static|get|set)\b|\b(?:true|false|null|undefined|NaN|Infinity)\b|[A-Za-z_$][\w$]*|===|!==|=>|==|!=|<=|>=|\+\+|--|\+=|-=|&&|\|\||\?\?|\?\.|[+\-*\/%=<>!&|^~?:]+|[{}()[\].,;])/g;
+
+      let html = "";
+      let last = 0;
+      let previous = "";
+
+      for (const match of source.matchAll(pattern)) {
+        const token = match[0];
+        const index = match.index;
+
+        html += escapeHTML(source.slice(last, index));
+
+        let type;
+
+        if (/^\/\//.test(token) || /^\/\*/.test(token)) {
+          type = "comment";
+        } else if (/^["'`]/.test(token)) {
+          type = "string";
+        } else if (/^\d/.test(token)) {
+          type = "number";
+        } else if (/^(true|false|null|undefined|NaN|Infinity)$/.test(token)) {
+          type = "boolean";
+        } else if (/^(const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|new|class|extends|constructor|this|super|async|await|try|catch|finally|throw|typeof|instanceof|in|of|delete|void|yield|import|export|from|default|as|static|get|set)$/.test(token)) {
+          type = "keyword";
+        } else if (/^[A-Za-z_$]/.test(token)) {
+          type = previous === "." ? "property" :
+            /^\s*\(/.test(source.slice(index + token.length))
+              ? "function" : "identifier";
+        } else if (/^[{}()[\].,;]$/.test(token)) {
+          type = "punctuation";
+        } else {
+          type = "operator";
+        }
+
+        html += '<span class="syntax-' + type + '">' +
+          escapeHTML(token) + '</span>';
+
+        last = index + token.length;
+        previous = token;
+      }
+
+      html += escapeHTML(source.slice(last));
+      return html || " ";
+    }
+
+    function paintLI(source) {
+      return source.split("\n").map((line, index) => {
+        if (index === 0 && line.startsWith("(!lI/1;")) {
+          return '<span class="syntax-li-header">' +
+            escapeHTML(line) + '</span>';
+        }
+
+        const parts = line.split(/(\([^)]*\))/g);
+
+        return parts.map(part => {
+          if (part.startsWith("(") && part.endsWith(")")) {
+            return '<span class="syntax-li-note">' +
+              escapeHTML(part) + '</span>';
+          }
+
+          return [...part].map(ch => {
+            if (ch === "l") {
+              return '<span class="syntax-li-zero">l</span>';
+            }
+            if (ch === "I") {
+              return '<span class="syntax-li-one">I</span>';
+            }
+            return escapeHTML(ch);
+          }).join("");
+        }).join("");
+      }).join("\n") || " ";
+    }
+
+    function refreshHighlight(textarea, layer, painter) {
+      layer.innerHTML = painter(textarea.value);
+      layer.scrollTop = textarea.scrollTop;
+      layer.scrollLeft = textarea.scrollLeft;
+    }
+
+    function refreshEditors() {
+      refreshHighlight(jsInput, jsHighlight, paintJS);
+      refreshHighlight(liOutput, liHighlight, paintLI);
+      updateCounts();
+    }
+
+    jsInput.addEventListener("input", () =>
+      refreshHighlight(jsInput, jsHighlight, paintJS)
+    );
+
+    liOutput.addEventListener("input", () =>
+      refreshHighlight(liOutput, liHighlight, paintLI)
+    );
+
+    for (const [textarea, layer] of [
+      [jsInput, jsHighlight],
+      [liOutput, liHighlight]
+    ]) {
+      textarea.addEventListener("scroll", () => {
+        layer.scrollTop = textarea.scrollTop;
+        layer.scrollLeft = textarea.scrollLeft;
+      });
+    }
+
     // Clicking either filename tab swaps the JavaScript and lI panes left/right.
     const workspace = document.querySelector(".workspace");
     const jsPane = document.querySelector('[aria-label="JavaScript editor"]');
     const liPane = document.querySelector('[aria-label="lI editor"]');
+
     function flipPanes() {
       if (workspace.firstElementChild === jsPane) {
         workspace.insertBefore(liPane, jsPane);
@@ -427,6 +634,7 @@
         workspace.insertBefore(jsPane, liPane);
       }
     }
+
     for (const tab of [$("jsTab"), $("liTab")]) {
       tab.addEventListener("click", flipPanes);
       tab.addEventListener("keydown", (event) => {
@@ -443,7 +651,8 @@
       line.textContent = message;
       $("consoleOutput").appendChild(line);
       $("consoleOutput").scrollTop = $("consoleOutput").scrollHeight;
-      $("consoleSummary").textContent = message.length > 42 ? message.slice(0, 39) + "…" : message;
+      $("consoleSummary").textContent =
+        message.length > 42 ? message.slice(0, 39) + "…" : message;
     }
 
     function clearConsole() {
@@ -453,21 +662,30 @@
 
     function updateGutter(textarea, gutter) {
       const lines = Math.max(1, textarea.value.split("\n").length);
-      gutter.textContent = Array.from({ length: lines }, (_, i) => i + 1).join("\n");
+      gutter.textContent = Array.from(
+        { length: lines }, (_, i) => i + 1
+      ).join("\n");
       gutter.scrollTop = textarea.scrollTop;
     }
 
     function updateCounts() {
       const count = [...jsInput.value].length;
-      $("charCount").textContent = count + (count === 1 ? " character" : " characters");
+      $("charCount").textContent =
+        count + (count === 1 ? " character" : " characters");
       updateGutter(jsInput, $("jsGutter"));
       updateGutter(liOutput, $("liGutter"));
     }
 
     jsInput.addEventListener("input", updateCounts);
     liOutput.addEventListener("input", updateCounts);
-    jsInput.addEventListener("scroll", () => $("jsGutter").scrollTop = jsInput.scrollTop);
-    liOutput.addEventListener("scroll", () => $("liGutter").scrollTop = liOutput.scrollTop);
+
+    jsInput.addEventListener("scroll", () =>
+      $("jsGutter").scrollTop = jsInput.scrollTop
+    );
+
+    liOutput.addEventListener("scroll", () =>
+      $("liGutter").scrollTop = liOutput.scrollTop
+    );
 
     function codePointOrder(a, b) {
       return a.codePointAt(0) - b.codePointAt(0);
@@ -475,7 +693,9 @@
 
     function countChars(source) {
       const frequencies = new Map();
-      for (const ch of source) frequencies.set(ch, (frequencies.get(ch) || 0) + 1);
+      for (const ch of source) {
+        frequencies.set(ch, (frequencies.get(ch) || 0) + 1);
+      }
       return frequencies;
     }
 
@@ -487,31 +707,52 @@
     }
 
     function buildCodeLengths(frequencies) {
-      const entries = [...frequencies.entries()].sort((a, b) => codePointOrder(a[0], b[0]));
+      const entries = [...frequencies.entries()]
+        .sort((a, b) => codePointOrder(a[0], b[0]));
+
       if (!entries.length) return new Map();
+
       let order = 0;
+
       let queue = entries.map(([ch, freq]) => ({
-        kind: "leaf", ch, freq, minCp: ch.codePointAt(0), order: order++,
-        left: null, right: null
+        kind: "leaf",
+        ch,
+        freq,
+        minCp: ch.codePointAt(0),
+        order: order++,
+        left: null,
+        right: null
       }));
+
       if (queue.length === 1) return new Map([[queue[0].ch, 1]]);
 
       while (queue.length > 1) {
         queue.sort(compareNodes);
         const left = queue.shift();
         const right = queue.shift();
+
         queue.push({
-          kind: "internal", ch: null, freq: left.freq + right.freq,
-          minCp: Math.min(left.minCp, right.minCp), order: order++,
-          left, right
+          kind: "internal",
+          ch: null,
+          freq: left.freq + right.freq,
+          minCp: Math.min(left.minCp, right.minCp),
+          order: order++,
+          left,
+          right
         });
       }
 
       const lengths = new Map();
+
       function visit(node, depth) {
-        if (node.kind === "leaf") lengths.set(node.ch, depth);
-        else { visit(node.left, depth + 1); visit(node.right, depth + 1); }
+        if (node.kind === "leaf") {
+          lengths.set(node.ch, depth);
+        } else {
+          visit(node.left, depth + 1);
+          visit(node.right, depth + 1);
+        }
       }
+
       visit(queue[0], 0);
       return lengths;
     }
@@ -520,145 +761,236 @@
       const entries = [...lengths.entries()].sort((a, b) =>
         a[1] - b[1] || codePointOrder(a[0], b[0])
       );
+
       const codes = new Map();
       if (!entries.length) return codes;
+
       let code = 0n;
       let previousLength = entries[0][1];
+
       for (let i = 0; i < entries.length; i++) {
         const [ch, length] = entries[i];
-        if (i > 0) code = (code + 1n) << BigInt(length - previousLength);
-        if (code >= (1n << BigInt(length))) throw new Error("Invalid canonical Huffman lengths.");
+
+        if (i > 0) {
+          code = (code + 1n) << BigInt(length - previousLength);
+        }
+
+        if (code >= (1n << BigInt(length))) {
+          throw new Error("Invalid canonical Huffman lengths.");
+        }
+
         codes.set(ch, code.toString(2).padStart(length, "0"));
         previousLength = length;
       }
+
       return codes;
     }
 
     function makeHeader(source, frequencies, bitCount) {
       const count = [...source].length;
+
       const field = [...frequencies.entries()]
         .sort((a, b) => codePointOrder(a[0], b[0]))
-        .map(([ch, freq]) => "U+" + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, "0") + ":" + freq)
+        .map(([ch, freq]) =>
+          "U+" + ch.codePointAt(0).toString(16).toUpperCase()
+            .padStart(4, "0") + ":" + freq
+        )
         .join(",");
-      return "(!lI/1;N=" + count + ";B=" + bitCount + ";F=" + (field || "-") + ")";
+
+      return "(!lI/1;N=" + count + ";B=" + bitCount +
+        ";F=" + (field || "-") + ")";
     }
 
     function encode(source) {
       for (let i = 0; i < source.length; i++) {
         const unit = source.charCodeAt(i);
+
         if (unit >= 0xD800 && unit <= 0xDBFF) {
           const next = source.charCodeAt(i + 1);
-          if (!(next >= 0xDC00 && next <= 0xDFFF)) throw new Error("Source contains an unpaired UTF-16 surrogate.");
+
+          if (!(next >= 0xDC00 && next <= 0xDFFF)) {
+            throw new Error("Source contains an unpaired UTF-16 surrogate.");
+          }
+
           i++;
         } else if (unit >= 0xDC00 && unit <= 0xDFFF) {
           throw new Error("Source contains an unpaired UTF-16 surrogate.");
         }
       }
+
       const frequencies = countChars(source);
       const codes = buildCanonicalCodes(buildCodeLengths(frequencies));
+
       let bits = "";
+
       for (const ch of source) {
         if (!codes.has(ch)) throw new Error("Missing Huffman code.");
         bits += codes.get(ch);
       }
+
       return makeHeader(source, frequencies, bits.length) + "\n" +
         bits.replace(/0/g, "l").replace(/1/g, "I") + "\n";
     }
 
     function parseHeader(line) {
       const match = /^\(!lI\/1;N=(\d+);B=(\d+);F=(.*?)\)$/.exec(line);
+
       if (!match) throw new Error("Missing or malformed lI v0.1 header.");
+
       const count = Number(match[1]);
       const bitCount = Number(match[2]);
-      if (!Number.isSafeInteger(count) || !Number.isSafeInteger(bitCount)) throw new Error("Header count is too large.");
+
+      if (!Number.isSafeInteger(count) || !Number.isSafeInteger(bitCount)) {
+        throw new Error("Header count is too large.");
+      }
+
       const frequencies = new Map();
+
       if (match[3] !== "-") {
         for (const item of match[3].split(",")) {
           const entry = /^U\+([0-9A-Fa-f]{4,6}):([1-9]\d*)$/.exec(item);
+
           if (!entry) throw new Error("Malformed frequency entry: " + item);
+
           const cp = Number.parseInt(entry[1], 16);
           const freq = Number(entry[2]);
-          if (cp > 0x10FFFF || (cp >= 0xD800 && cp <= 0xDFFF) || !Number.isSafeInteger(freq)) {
+
+          if (
+            cp > 0x10FFFF ||
+            (cp >= 0xD800 && cp <= 0xDFFF) ||
+            !Number.isSafeInteger(freq)
+          ) {
             throw new Error("Invalid frequency entry: " + item);
           }
+
           const ch = String.fromCodePoint(cp);
-          if (frequencies.has(ch)) throw new Error("Duplicate code point: " + item);
+
+          if (frequencies.has(ch)) {
+            throw new Error("Duplicate code point: " + item);
+          }
+
           frequencies.set(ch, freq);
         }
       }
+
       const sum = [...frequencies.values()].reduce((a, b) => a + b, 0);
-      if (sum !== count) throw new Error("Header frequency sum does not equal N.");
-      if ((count === 0) !== (frequencies.size === 0)) throw new Error("Empty-source header is inconsistent.");
+
+      if (sum !== count) {
+        throw new Error("Header frequency sum does not equal N.");
+      }
+
+      if ((count === 0) !== (frequencies.size === 0)) {
+        throw new Error("Empty-source header is inconsistent.");
+      }
+
       return { count, bitCount, frequencies };
     }
 
     function stripNotes(body) {
       let bits = "";
       let i = 0;
+
       while (i < body.length) {
         const ch = body[i];
+
         if (ch === "l" || ch === "I") {
           bits += ch === "l" ? "0" : "1";
           i++;
           continue;
         }
+
         if (ch === "(") {
           const close = body.indexOf(")", i + 1);
-          if (close !== -1) { i = close + 1; continue; }
+
+          if (close !== -1) {
+            i = close + 1;
+            continue;
+          }
 
           let lastNoteChar = -1;
+
           for (let j = i + 1; j < body.length; j++) {
-            if (body[j] !== "l" && body[j] !== "I" && !/\s/u.test(body[j])) lastNoteChar = j;
+            if (body[j] !== "l" && body[j] !== "I" && !/\s/u.test(body[j])) {
+              lastNoteChar = j;
+            }
           }
+
           if (lastNoteChar === -1) return bits;
+
           i = lastNoteChar + 1;
           continue;
         }
+
         i++;
       }
+
       return bits;
     }
 
-
     function buildFixedByteCodes() {
       const frequencies = new Map();
-      for (let byte = 0; byte < 256; byte++) frequencies.set(String.fromCharCode(byte), 1);
+
+      for (let byte = 0; byte < 256; byte++) {
+        frequencies.set(String.fromCharCode(byte), 1);
+      }
+
       const model = "const state = { count: 0, items: [], active: true };\nfunction updateState(value) {\n  if (value == null) return false;\n  state.count += 1;\n  state.items.push(value);\n  return state.count;\n}\nconst getItem = (items, index = 0) => items[index] ?? null;\nclass AppController {\n  constructor(options = {}) {\n    this.options = options;\n    this.ready = true;\n  }\n  async load(url) {\n    try {\n      const response = await fetch(url);\n      if (!response.ok) throw new Error(`HTTP ${response.status}`);\n      const data = await response.json();\n      return data;\n    } catch (error) {\n      console.error(\"Load failed:\", error);\n      return { error: String(error) };\n    }\n  }\n}\nfor (const item of state.items) {\n  console.log(\"item:\", item);\n}\nconst message = 'Hello, world!';\nconst template = `Count: ${state.count}`;\nconst pattern = /[a-z]+/gi;\nconst result = state.items.map((item) => ({ id: item.id, name: item.name ?? \"\" }));\nexport { state, updateState, getItem, AppController, result };\n";
+
       for (const ch of model) {
         const key = String.fromCharCode(ch.charCodeAt(0) & 255);
         frequencies.set(key, (frequencies.get(key) || 1) + 1);
       }
+
       return buildCanonicalCodes(buildCodeLengths(frequencies));
     }
+
     const fixedByteCodes = buildFixedByteCodes();
 
     function decodeWithCodes(bits, codes) {
       const decodeTable = new Map([...codes].map(([ch, code]) => [code, ch]));
+
       let output = "";
       let pending = "";
+
       for (const bit of bits) {
         pending += bit;
+
         if (decodeTable.has(pending)) {
           output += decodeTable.get(pending);
           pending = "";
         } else {
           let prefix = false;
-          for (const code of decodeTable.keys()) if (code.startsWith(pending)) { prefix = true; break; }
-          if (!prefix) throw new Error("Invalid canonical Huffman bit sequence.");
+
+          for (const code of decodeTable.keys()) {
+            if (code.startsWith(pending)) {
+              prefix = true;
+              break;
+            }
+          }
+
+          if (!prefix) {
+            throw new Error("Invalid canonical Huffman bit sequence.");
+          }
         }
       }
+
       if (pending) throw new Error("Bitstream ends inside a Huffman code.");
+
       return output;
     }
 
     function encodeHeaderless(source) {
       const bytes = new TextEncoder().encode(source);
       let bits = "";
+
       for (const byte of bytes) {
         const code = fixedByteCodes.get(String.fromCharCode(byte));
+
         if (!code) throw new Error("No fixed Huffman code for byte " + byte + ".");
+
         bits += code;
       }
+
       return bits.replace(/0/g, "l").replace(/1/g, "I") + "\n";
     }
 
@@ -666,6 +998,7 @@
       const bits = stripNotes(documentText).replace(/\s/g, "");
       const byteChars = decodeWithCodes(bits, fixedByteCodes);
       const bytes = Uint8Array.from(byteChars, ch => ch.charCodeAt(0));
+
       try {
         return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
       } catch (_) {
@@ -675,16 +1008,33 @@
 
     function decode(documentText) {
       const newline = documentText.indexOf("\n");
-      let header = newline === -1 ? documentText : documentText.slice(0, newline);
+
+      let header = newline === -1
+        ? documentText
+        : documentText.slice(0, newline);
+
       if (header.endsWith("\r")) header = header.slice(0, -1);
+
       if (!/^\(!lI\/1;N=/.test(header)) {
-        if (header.startsWith("(!lI")) throw new Error("Malformed lI header. Fix the header or remove it completely to use the fixed canonical Huffman table.");
+        if (header.startsWith("(!lI")) {
+          throw new Error("Malformed lI header. Fix the header or remove it completely to use the fixed canonical Huffman table.");
+        }
+
         return decodeHeaderless(documentText);
       }
-      if (newline === -1) throw new Error("Headered lI document has no header/body separator.");
+
+      if (newline === -1) {
+        throw new Error("Headered lI document has no header/body separator.");
+      }
+
       const { count, bitCount, frequencies } = parseHeader(header);
       const bits = stripNotes(documentText.slice(newline + 1));
-      if (bits.length !== bitCount) throw new Error("Bit count mismatch: header says " + bitCount + ", found " + bits.length + ".");
+
+      if (bits.length !== bitCount) {
+        throw new Error("Bit count mismatch: header says " +
+          bitCount + ", found " + bits.length + ".");
+      }
+
       if (count === 0) {
         if (bits.length) throw new Error("Empty source cannot contain bits.");
         return "";
@@ -692,11 +1042,20 @@
 
       const codes = buildCanonicalCodes(buildCodeLengths(frequencies));
       const output = decodeWithCodes(bits, codes);
-      if ([...output].length !== count) throw new Error("Decoded character count does not equal N.");
+
+      if ([...output].length !== count) {
+        throw new Error("Decoded character count does not equal N.");
+      }
+
       const actual = countChars(output);
-      if (actual.size !== frequencies.size || [...frequencies].some(([ch, n]) => actual.get(ch) !== n)) {
+
+      if (
+        actual.size !== frequencies.size ||
+        [...frequencies].some(([ch, n]) => actual.get(ch) !== n)
+      ) {
         throw new Error("Decoded frequencies do not match the header.");
       }
+
       return output;
     }
 
@@ -707,9 +1066,12 @@
         lastOutput = result;
         lastOutputType = "li";
         $("modeStatus").textContent = "Encoded";
-        log("Encoded " + [...jsInput.value].length + " source characters into " +
+
+        log("Encoded " + [...jsInput.value].length +
+          " source characters into " +
           result.split("\n")[0].match(/;B=(\d+);/)[1] + " bits.", "success");
-        updateCounts();
+
+        refreshEditors();
       } catch (error) {
         $("modeStatus").textContent = "Error";
         log(error.message, "error");
@@ -723,8 +1085,11 @@
         lastOutput = result;
         lastOutputType = "li";
         $("modeStatus").textContent = "Encoded headerless";
-        log("Encoded " + new TextEncoder().encode(jsInput.value).length + " UTF-8 bytes using the fixed canonical Huffman table (no header).", "success");
-        updateCounts();
+
+        log("Encoded " + new TextEncoder().encode(jsInput.value).length +
+          " UTF-8 bytes using the fixed canonical Huffman table (no header).", "success");
+
+        refreshEditors();
       } catch (error) {
         $("modeStatus").textContent = "Error";
         log(error.message, "error");
@@ -738,8 +1103,11 @@
         lastOutput = result;
         lastOutputType = "js";
         $("modeStatus").textContent = "Decoded";
-        log("Decoded lI successfully. Recovered " + [...result].length + " source characters.", "success");
-        updateCounts();
+
+        log("Decoded lI successfully. Recovered " +
+          [...result].length + " source characters.", "success");
+
+        refreshEditors();
       } catch (error) {
         $("modeStatus").textContent = "Error";
         log(error.message, "error");
@@ -748,29 +1116,44 @@
 
     $("runBtn").addEventListener("click", () => {
       clearConsole();
+
       const lines = [];
+
       const safeConsole = {
         log: (...args) => lines.push(args.map(String).join(" ")),
         info: (...args) => lines.push(args.map(String).join(" ")),
         warn: (...args) => lines.push("Warning: " + args.map(String).join(" ")),
         error: (...args) => lines.push("Error: " + args.map(String).join(" "))
       };
+
       try {
         if (!liOutput.value.trim()) {
           throw new Error("Paste or open an lI document in the main.li pane first.");
         }
+
         const source = decode(liOutput.value);
         const fn = new Function("console", '"use strict";\n' + source);
+
         fn(safeConsole);
-        if (!lines.length) log("lI program finished with no console output.", "muted");
-        else lines.forEach(line => log(line));
+
+        if (!lines.length) {
+          log("lI program finished with no console output.", "muted");
+        } else {
+          lines.forEach(line => log(line));
+        }
+
         $("modeStatus").textContent = "Ran lI";
         log("Parsed and executed.", "success");
       } catch (error) {
         log(error.name + ": " + error.message, "error");
-        if (error.name === "EvalError" || /unsafe-eval|Content Security Policy/i.test(error.message)) {
+
+        if (
+          error.name === "EvalError" ||
+          /unsafe-eval|Content Security Policy/i.test(error.message)
+        ) {
           log("This preview may block JavaScript execution.", "muted");
         }
+
         $("modeStatus").textContent = "Run error";
       }
     });
@@ -781,7 +1164,7 @@
       lastOutput = "";
       $("modeStatus").textContent = "Ready";
       clearConsole();
-      updateCounts();
+      refreshEditors();
     });
 
     $("clearConsoleBtn").addEventListener("click", clearConsole);
@@ -789,8 +1172,10 @@
     $("openFile").addEventListener("change", async (event) => {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
+
       try {
         const content = await file.text();
+
         if (file.name.toLowerCase().endsWith(".li")) {
           liOutput.value = content;
           log("Opened " + file.name + " in the lI pane.", "success");
@@ -798,8 +1183,9 @@
           jsInput.value = content;
           log("Opened " + file.name + " in the JavaScript pane.", "success");
         }
+
         $("modeStatus").textContent = "Opened file";
-        updateCounts();
+        refreshEditors();
       } catch (error) {
         log("Could not open file: " + error.message, "error");
       } finally {
@@ -811,19 +1197,22 @@
       const useLi = liOutput.value.length > 0;
       const content = useLi ? liOutput.value : jsInput.value;
       const filename = useLi ? "main.li" : "main.js";
+
       const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
+
       link.href = url;
       link.download = filename;
       document.body.appendChild(link);
       link.click();
       link.remove();
       URL.revokeObjectURL(url);
+
       log("Saved " + filename + ".", "success");
     });
 
-    updateCounts();
+    refreshEditors();
   </script>
 </body>
 </html>
