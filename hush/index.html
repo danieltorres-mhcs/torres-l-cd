@@ -898,7 +898,7 @@ footer {
 
       <aside class="sidebar">
             <div class="side-heading">PARTICIPANTS · MAX 5</div>
-    <div id="participantList"></div>
+    <div id="participantList" class="participant-list"><div class="hint">Loading participants…</div></div>
         <hr class="side-rule">
 
         <div class="side-heading">FILES</div>
@@ -963,7 +963,7 @@ const state = {
   inviteCode: "", roomKey: null, keyText: "", invite: "",
   pendingFiles: [], roomFileBytes: 0, sendTimers: new Set(),
   objectUrls: new Set(), seenMessageIds: new Set(), pollTimer: null,
-  pollBusy: false, currentScreen: "home", expiresAt: null
+  pollBusy: false, currentScreen: "home", expiresAt: null, participants: []
 };
 function setupNameInput(id) {
   const input = $(id);
@@ -1244,10 +1244,68 @@ async function waitForPairing() {
   }
 }
 
+function renderParticipants(participants) {
+  // Keep only valid participant records and update the sidebar from the server's
+  // authoritative participant list on every poll.
+  const cleaned = Array.isArray(participants)
+    ? participants.filter(p => p && p.id && (p.display_name || p.displayName || p.name))
+    : [];
+
+  // If the backend hasn't returned the current participant yet, include this
+  // browser's own participant so the sidebar isn't blank.
+  if (state.participantId && !cleaned.some(p => p.id === state.participantId)) {
+    cleaned.unshift({ id: state.participantId, display_name: state.name });
+  }
+
+  state.participants = cleaned.map(p => ({
+    id: p.id,
+    name: p.display_name || p.displayName || p.name || "Participant"
+  }));
+
+  const list = $("participantList");
+  list.replaceChildren();
+
+  if (!state.participants.length) {
+    const empty = document.createElement("div");
+    empty.className = "hint";
+    empty.textContent = "Waiting for participants…";
+    list.appendChild(empty);
+    return;
+  }
+
+  for (const participant of state.participants) {
+    const item = document.createElement("div");
+    item.className = "participant-item";
+
+    const dot = document.createElement("span");
+    dot.className = "participant-dot";
+    dot.setAttribute("aria-hidden", "true");
+
+    const name = document.createElement("span");
+    name.className = "participant-name";
+    name.textContent = participant.name;
+
+    item.append(dot, name);
+    if (participant.id === state.participantId) {
+      const you = document.createElement("span");
+      you.className = "participant-you";
+      you.textContent = "YOU";
+      item.appendChild(you);
+    }
+    list.appendChild(item);
+  }
+}
+
+function getParticipantName(participantId) {
+  if (participantId === state.participantId) return state.name;
+  return state.participants.find(p => p.id === participantId)?.name || "Unknown participant";
+}
+
 function openChat() {
   $("roomLabel").textContent = state.roomId.slice(0, 8);
   $("roomStatus").textContent = "connected · encrypted text";
   $("messages").replaceChildren();
+  $("participantList").replaceChildren();
   const note = document.createElement("div");
   note.className = "system-message";
   note.textContent = "Messages are encrypted in your browser before they reach the server.";
@@ -1281,17 +1339,16 @@ async function pollMessages() {
       action: "list", roomId: state.roomId,
       participantId: state.participantId, accessToken: state.accessToken
     });
-    if (result.peerName) {
-      state.peerName = result.peerName;
-    }
+    renderParticipants(result.participants || []);
     for (const message of (result.messages || [])) {
       if (state.seenMessageIds.has(message.id)) continue;
       state.seenMessageIds.add(message.id);
       try {
         const text = await decryptText(message.ciphertext);
         const mine = message.sender_id === state.participantId;
+        const senderName = getParticipantName(message.sender_id);
         addMessage(
-          mine ? state.name : (state.peerName || "Connecting…"),
+          senderName,
           text,
           [],
           mine,
@@ -1520,6 +1577,7 @@ function leaveRoom() {
   state.pendingFiles = [];
   state.roomFileBytes = 0;
   state.seenMessageIds.clear();
+  state.participants = [];
   state.expiresAt = null;
 
   $("fileList").replaceChildren();
