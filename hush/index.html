@@ -1963,7 +1963,16 @@ $("messageForm").addEventListener("submit", async event => {
     updateCount();
   }
 });
+$("messageInput").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
 
+  // Modifier + Enter inserts a newline normally.
+  if (e.shiftKey || e.ctrlKey || e.metaKey) return;
+
+  // Enter alone submits the existing chat form.
+  e.preventDefault();
+  $("messageForm").requestSubmit();
+});
 function leaveRoom() {
   stopPolling();
   state.sendTimers.forEach(clearTimeout);
