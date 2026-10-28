@@ -198,12 +198,14 @@ const act={
   rmuser:({id,e})=>dlg(`<h2>Remove ${esc(e)}?</h2><p class="meta">Their account is deleted and they can no longer publish or edit. Songs they published stay in the library.</p><div class="bar"><button class="btn pri" data-act="rmuser2" data-id="${id}">Remove person</button><button class="btn" data-act="close">Keep person</button></div>`),
   rmuser2:async({id})=>{$('#dlg').close();const{data,error}=await fn({action:'delete',user_id:id});if(error||data?.error)return toast('Couldn’t remove them: '+(data?.error||error.message));toast('Person removed.');ppl()},
   out:async()=>{await sb.auth.signOut();admin()},
-  pk:async()=>{st('Waiting for your passkey…');const{error}=await sb.auth.signInWithPasskey();error?st('Couldn’t sign in with a passkey. Check that passkeys are enabled in Supabase for this domain, or use your password.'):admin()},
-  pkadd:async()=>{const{error}=await sb.auth.registerPasskey();if(error)return toast('Couldn’t add the passkey: '+error.message);toast('Passkey added.');pks()},
+  pk:async()=>{if(pkBusy)return;pkBusy=true;st('Waiting for your passkey. Finish the prompt from your browser or device…');const{error}=await sb.auth.signInWithPasskey();pkBusy=false;error?st(pkErr(error,'sign in')):admin()},
+  pkadd:async()=>{if(pkBusy)return;pkBusy=true;toast('Waiting for your passkey. Finish the prompt from your browser or device…');const{error}=await sb.auth.registerPasskey();pkBusy=false;if(error)return toast(pkErr(error,'add the passkey'));toast('Passkey added.');pks()},
   pkdel:async({id})=>{const{error}=await sb.auth.passkey.delete({passkeyId:id});if(error)return toast('Couldn’t remove the passkey: '+error.message);toast('Passkey removed.');pks()}
 };
 async function ppl(){const e=$('#ppl');if(!e)return;const{data,error}=await fn({action:'list'});
   e.innerHTML=error||!data||data.error?none('Couldn’t load people. Deploy the manage-users function first (see the setup steps).'):data.users.map(u=>`<div class="row" style="grid-template-columns:1fr auto"><span>${esc(u.email)}<small style="display:block">${u.role==='owner'?'Owner':'Can publish and edit their own songs'}</small></span>${u.role==='owner'?'':`<button data-act="rmuser" data-id="${u.user_id}" data-e="${esc(u.email)}">Remove</button>`}</div>`).join('')}
+let pkBusy=false;
+const pkErr=(e,what)=>/abort/i.test((e.name||'')+' '+(e.message||''))?`The passkey prompt was closed or interrupted, so we couldn’t ${what}. Press the button once and finish the prompt.`:`Couldn’t ${what}: ${e.message||'unknown error'}`;
 async function pks(){const e=$('#pks');if(!e)return;const{data,error}=await sb.auth.passkey.list();
   e.innerHTML=error?none('Couldn’t load passkeys: '+esc(error.message)):data&&data.length?data.map(p=>`<div class="row" style="grid-template-columns:1fr auto"><span>${esc(p.friendly_name||'Passkey')}<small style="display:block">Added ${new Date(p.created_at).toLocaleDateString()}</small></span><button data-act="pkdel" data-id="${p.id}">Remove</button></div>`).join(''):none('No passkeys yet. Add one to sign in without a password.')}
 const forms={
