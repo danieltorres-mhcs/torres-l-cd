@@ -4,69 +4,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="A simple flashcard app for studying anywhere.">
 <title>Flashcards</title>
 
+<link rel="manifest" href="manifest.json">
+
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
   padding: 24px 16px;
-  background: #fff;
-  color: #222;
   font-family: Arial, sans-serif;
   font-size: 14px;
+  color: #222;
+  background: #fff;
 }
 
-main {
-  max-width: 680px;
-  margin: 0 auto;
-}
+main { max-width: 680px; margin: auto; }
+h1 { font-size: 22px; margin: 0 0 24px; }
+h2 { font-size: 18px; margin: 0 0 16px; }
+h3 { font-size: 15px; }
+p { line-height: 1.5; }
 
-h1 {
-  margin: 0 0 24px;
-  font-size: 22px;
-  font-weight: 600;
-}
-
-h2 {
-  margin: 0 0 16px;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-h3 {
-  margin: 0 0 12px;
-  font-size: 15px;
-}
-
-p {
-  line-height: 1.5;
-}
-
-button, input, textarea {
-  font: inherit;
-}
+button, input, textarea { font: inherit; }
 
 button {
   padding: 9px 12px;
   border: 1px solid #ccc;
   border-radius: 0;
-  background: #fff;
   color: #222;
+  background: white;
   cursor: pointer;
 }
 
-button:hover {
-  background: #f5f5f5;
-}
-
-button:disabled {
-  color: #999;
-  cursor: not-allowed;
-}
+button:hover { background: #f5f5f5; }
+button:disabled { color: #999; cursor: not-allowed; }
 
 input[type="text"], textarea {
   display: block;
@@ -74,79 +48,30 @@ input[type="text"], textarea {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 0;
-  background: #fff;
+  background: white;
   color: #222;
 }
 
-textarea {
-  min-height: 90px;
-  resize: vertical;
-}
+textarea { min-height: 90px; resize: vertical; }
+label { display: block; margin-bottom: 7px; font-weight: 600; }
+.muted { color: #777; }
+.small { font-size: 12px; }
+.hidden { display: none !important; }
 
-label {
-  display: block;
-  margin-bottom: 7px;
-  font-weight: 600;
-}
-
-.muted {
-  color: #777;
-}
-
-.small {
-  font-size: 12px;
-}
-
-.toolbar {
+.toolbar, .footer-actions, .item-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 16px;
 }
 
-.row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.item {
-  padding: 14px 0;
-  border-bottom: 1px solid #ddd;
-}
-
-.item:first-child {
-  border-top: 1px solid #ddd;
-}
-
-.item-title {
-  margin-bottom: 5px;
-  overflow-wrap: anywhere;
-  font-weight: 600;
-}
-
-.item-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.field {
-  margin-bottom: 18px;
-}
-
-.field small {
-  display: block;
-  margin-top: 6px;
-  color: #777;
-  font-weight: normal;
-}
-
-.hidden {
-  display: none !important;
-}
+.item-actions { margin-top: 10px; margin-bottom: 0; }
+.item { padding: 14px 0; border-bottom: 1px solid #ddd; }
+.item:first-child { border-top: 1px solid #ddd; }
+.item-title { font-weight: 600; margin-bottom: 5px; overflow-wrap: anywhere; }
+.field { margin-bottom: 18px; }
+.field small { display: block; margin-top: 6px; color: #777; }
+.danger { color: #a11; }
 
 .card-box {
   min-height: 220px;
@@ -162,13 +87,7 @@ label {
   cursor: pointer;
 }
 
-.card-text {
-  font-size: 20px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
+.card-text { font-size: 20px; line-height: 1.5; white-space: pre-wrap; }
 .card-image {
   display: block;
   max-width: 100%;
@@ -177,12 +96,7 @@ label {
   margin: 0 auto 16px;
 }
 
-.study-info {
-  margin-bottom: 12px;
-  color: #777;
-}
-
-.hint-box {
+.hint-box, .letter-reveal {
   margin-top: 16px;
   padding: 12px;
   border: 1px solid #ddd;
@@ -190,64 +104,80 @@ label {
   overflow-wrap: anywhere;
 }
 
-.letter-reveal {
-  margin-top: 16px;
-  padding: 12px;
-  border: 1px solid #ddd;
-  font-size: 20px;
-  line-height: 1.8;
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-}
-
-.revealed-letter {
-  color: red;
-  font-weight: bold;
-}
-
-.hidden-letter {
-  color: #777;
-}
+.letter-reveal { font-size: 20px; line-height: 1.8; }
+.revealed-letter { color: red; font-weight: bold; }
+.hidden-letter { color: #777; }
 
 .preview {
+  display: block;
   max-width: 220px;
   max-height: 160px;
-  display: block;
   margin-top: 10px;
   object-fit: contain;
 }
 
-.danger {
-  color: #a11;
+.study-info { margin-bottom: 12px; color: #777; }
+
+/* Offline instructions dialog */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.45);
 }
 
-.footer-actions {
+.dialog {
+  max-width: 540px;
+  margin: 30px auto;
+  padding: 22px;
+  background: #fff;
+  border: 1px solid #ccc;
+}
+
+.dialog-header {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
-.section {
-  margin-top: 24px;
+.dialog-header h2 { margin: 0; }
+
+.instruction-step {
+  margin-bottom: 24px;
+}
+
+.instruction-step p { margin: 8px 0; }
+
+.screenshot-placeholder {
+  width: 100%;
+  min-height: 150px;
+  margin-top: 10px;
+  border: 1px dashed #aaa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  color: #777;
+  text-align: center;
+  background: #fafafa;
+}
+
+/* Replace each placeholder with an img element when you have screenshots. */
+.screenshot-placeholder img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 @media (max-width: 480px) {
-  body {
-    padding: 18px 12px;
-  }
-
-  .row {
-    align-items: flex-start;
-  }
-
-  .card-text {
-    font-size: 18px;
-  }
-
-  .card-box {
-    min-height: 190px;
-  }
+  body { padding: 18px 12px; }
+  .card-box { min-height: 190px; }
+  .card-text { font-size: 18px; }
+  .dialog { margin: 10px auto; padding: 16px; }
 }
 </style>
 </head>
@@ -256,16 +186,17 @@ label {
 <main>
   <h1>Flashcards</h1>
 
-  <!-- SET LIST -->
+  <!-- HOME -->
   <section id="homeView">
     <div class="toolbar">
       <button id="newSetButton">+ New set</button>
       <button id="exportButton">Export backup</button>
       <button id="importButton">Import backup</button>
+      <button id="offlineHelpButton">Offline instructions</button>
       <input id="importFile" type="file" accept=".json,application/json" class="hidden">
     </div>
 
-    <div id="newSetForm" class="hidden section">
+    <div id="newSetForm" class="hidden">
       <h3>Create a set</h3>
       <div class="field">
         <label for="newSetName">Set name</label>
@@ -380,12 +311,11 @@ label {
     </p>
   </section>
 
-  <!-- STUDY SUMMARY -->
+  <!-- SUMMARY -->
   <section id="summaryView" class="hidden">
     <h2>Study summary</h2>
     <p id="summaryText"></p>
     <div id="summaryList"></div>
-
     <div class="footer-actions">
       <button id="studyAgainButton">Study again</button>
       <button id="summaryBackButton">Back to set</button>
@@ -394,19 +324,57 @@ label {
   </section>
 </main>
 
+<div id="offlineDialog" class="dialog-backdrop hidden"
+     role="dialog" aria-modal="true" aria-labelledby="offlineDialogTitle">
+  <div class="dialog">
+    <div class="dialog-header">
+      <h2 id="offlineDialogTitle">How to use Flashcards offline</h2>
+      <button id="closeOfflineHelpButton" aria-label="Close instructions">Close</button>
+    </div>
+
+    <div class="instruction-step">
+      <h3>Step 1</h3>
+      <p>
+        Press the three dots or the Share button on the website,
+        depending on your browser.
+      </p>
+      <img src="/step-1-offlinedownload.jpg"
+     alt="Step 1: Open the browser menu">
+    </div>
+
+    <div class="instruction-step">
+      <h3>Step 2</h3>
+      <p>
+        Press <strong>More</strong>, if needed, then press
+        <strong>Add to Home Screen</strong>.
+      </p>
+      <img src="/step-2-offlinedownload.jpg"
+     alt="Step 2: Press add to home screen">
+    </div>
+
+    <div class="instruction-step">
+      <h3>Done!</h3>
+      <p>
+        Open Flashcards from your home screen. Once the app has been
+        loaded online and cached, it can work offline.
+      </p>
+    </div>
+
+    <button id="finishOfflineHelpButton">Got it</button>
+  </div>
+</div>
+
 <script>
 (() => {
   "use strict";
 
   const STORAGE_KEY = "simple-flashcards-sets-v1";
   const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
-
   const $ = id => document.getElementById(id);
 
   let sets = loadSets();
   let currentSetId = null;
   let editingCardId = null;
-
   let frontImageData = "";
   let backImageData = "";
 
@@ -417,51 +385,41 @@ label {
   let sessionResults = [];
   let sessionRecordedIds = new Set();
 
-  // Letter hint state
   let revealedLetterPositions = new Set();
   let letterRevealOrder = [];
   let letterRevealLimit = 0;
 
   function makeId() {
-    if (window.crypto && typeof window.crypto.randomUUID === "function") {
-      return window.crypto.randomUUID();
-    }
-    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+    return crypto.randomUUID
+      ? crypto.randomUUID()
+      : Date.now().toString(36) + Math.random().toString(36).slice(2);
   }
 
   function loadSets() {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) return [];
-
-      const parsed = JSON.parse(saved);
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
       if (!Array.isArray(parsed)) return [];
 
       return parsed.filter(set =>
-        set &&
-        typeof set.id === "string" &&
-        typeof set.name === "string" &&
-        Array.isArray(set.cards)
+        set && typeof set.id === "string" &&
+        typeof set.name === "string" && Array.isArray(set.cards)
       ).map(set => ({
         id: set.id,
         name: set.name,
         cards: set.cards.filter(card =>
-          card &&
-          typeof card.id === "string" &&
+          card && typeof card.id === "string" &&
           typeof card.front === "string" &&
           typeof card.back === "string"
         ).map(card => ({
           id: card.id,
           front: card.front,
           back: card.back,
-          hints: Array.isArray(card.hints)
-            ? card.hints.filter(hint => typeof hint === "string")
-            : [],
-          frontImage: typeof card.frontImage === "string" ? card.frontImage : "",
-          backImage: typeof card.backImage === "string" ? card.backImage : ""
+          hints: Array.isArray(card.hints) ? card.hints : [],
+          frontImage: card.frontImage || "",
+          backImage: card.backImage || ""
         }))
       }));
-    } catch (error) {
+    } catch {
       return [];
     }
   }
@@ -471,7 +429,7 @@ label {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sets));
       $("storageMessage").textContent = "";
       return true;
-    } catch (error) {
+    } catch {
       $("storageMessage").textContent =
         "Could not save. Storage may be full. Try smaller images or export a backup.";
       return false;
@@ -482,31 +440,52 @@ label {
     return sets.find(set => set.id === currentSetId) || null;
   }
 
-  function showView(viewId) {
-    [
-      "homeView",
-      "setView",
-      "editorView",
-      "studyView",
-      "summaryView"
-    ].forEach(id => {
-      $(id).classList.toggle("hidden", id !== viewId);
-    });
+  function showView(id) {
+    ["homeView", "setView", "editorView", "studyView", "summaryView"]
+      .forEach(view => $(view).classList.toggle("hidden", view !== id));
   }
 
   function makeButton(text, callback, className = "") {
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = text;
-    if (className) button.className = className;
+    button.className = className;
     button.addEventListener("click", callback);
     return button;
   }
 
+  // OFFLINE HELP DIALOG
+
+  function openOfflineHelp() {
+    $("offlineDialog").classList.remove("hidden");
+    $("closeOfflineHelpButton").focus();
+  }
+
+  function closeOfflineHelp() {
+    $("offlineDialog").classList.add("hidden");
+    $("offlineHelpButton").focus();
+  }
+
+  $("offlineHelpButton").addEventListener("click", openOfflineHelp);
+  $("closeOfflineHelpButton").addEventListener("click", closeOfflineHelp);
+  $("finishOfflineHelpButton").addEventListener("click", closeOfflineHelp);
+
+  $("offlineDialog").addEventListener("click", event => {
+    if (event.target === $("offlineDialog")) closeOfflineHelp();
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" &&
+        !$("offlineDialog").classList.contains("hidden")) {
+      closeOfflineHelp();
+    }
+  });
+
+  // SET LIST
+
   function renderHome() {
     const list = $("setList");
     list.replaceChildren();
-
     $("emptySets").classList.toggle("hidden", sets.length > 0);
 
     sets.forEach(set => {
@@ -519,8 +498,8 @@ label {
 
       const count = document.createElement("div");
       count.className = "muted small";
-      count.textContent =
-        set.cards.length + (set.cards.length === 1 ? " card" : " cards");
+      count.textContent = set.cards.length +
+        (set.cards.length === 1 ? " card" : " cards");
 
       const actions = document.createElement("div");
       actions.className = "item-actions";
@@ -540,15 +519,14 @@ label {
     });
   }
 
-  function openSet(setId) {
-    currentSetId = setId;
+  function openSet(id) {
+    currentSetId = id;
     renderSet();
     showView("setView");
   }
 
   function renderSet() {
     const set = currentSet();
-
     if (!set) {
       renderHome();
       showView("homeView");
@@ -556,9 +534,8 @@ label {
     }
 
     $("setTitle").textContent = set.name;
-    $("setCardCount").textContent =
-      set.cards.length + (set.cards.length === 1 ? " card" : " cards");
-
+    $("setCardCount").textContent = set.cards.length +
+      (set.cards.length === 1 ? " card" : " cards");
     $("emptyCards").classList.toggle("hidden", set.cards.length > 0);
 
     const list = $("cardList");
@@ -573,17 +550,7 @@ label {
       title.textContent = (index + 1) + ". " + card.front;
 
       const answer = document.createElement("div");
-      answer.className = "muted";
       answer.textContent = "Answer: " + card.back;
-
-      const details = document.createElement("div");
-      details.className = "muted small";
-
-      const parts = [];
-      if (card.hints.length) parts.push(card.hints.length + " hints");
-      if (card.frontImage) parts.push("front image");
-      if (card.backImage) parts.push("back image");
-      details.textContent = parts.join(" · ");
 
       const actions = document.createElement("div");
       actions.className = "item-actions";
@@ -592,9 +559,7 @@ label {
         makeButton("Delete", () => deleteCard(card.id), "danger")
       );
 
-      item.append(title, answer);
-      if (parts.length) item.append(details);
-      item.append(actions);
+      item.append(title, answer, actions);
       list.append(item);
     });
   }
@@ -611,16 +576,11 @@ label {
 
   $("saveNewSetButton").addEventListener("click", () => {
     const name = $("newSetName").value.trim();
-
-    if (!name) {
-      alert("Enter a name for your set.");
-      return;
-    }
+    if (!name) return alert("Enter a name for your set.");
 
     const set = { id: makeId(), name, cards: [] };
     sets.push(set);
     saveSets();
-
     $("newSetForm").classList.add("hidden");
     renderHome();
     openSet(set.id);
@@ -630,38 +590,27 @@ label {
     if (event.key === "Enter") $("saveNewSetButton").click();
   });
 
-  function renameSet(setId) {
-    const set = sets.find(item => item.id === setId);
+  function renameSet(id) {
+    const set = sets.find(item => item.id === id);
     if (!set) return;
 
     const name = prompt("Enter a new name for this set:", set.name);
     if (name === null) return;
-
-    if (!name.trim()) {
-      alert("The set name cannot be empty.");
-      return;
-    }
+    if (!name.trim()) return alert("The set name cannot be empty.");
 
     set.name = name.trim();
     saveSets();
     renderHome();
-
-    if (currentSetId === setId) renderSet();
+    if (currentSetId === id) renderSet();
   }
 
-  function deleteSet(setId) {
-    const set = sets.find(item => item.id === setId);
-    if (!set) return;
+  function deleteSet(id) {
+    const set = sets.find(item => item.id === id);
+    if (!set || !confirm('Delete "' + set.name + '" and all its cards?')) return;
 
-    if (!confirm('Delete the set "' + set.name + '" and all its cards?')) {
-      return;
-    }
-
-    sets = sets.filter(item => item.id !== setId);
+    sets = sets.filter(item => item.id !== id);
     saveSets();
-
-    if (currentSetId === setId) currentSetId = null;
-
+    currentSetId = null;
     renderHome();
     showView("homeView");
   }
@@ -681,92 +630,72 @@ label {
 
   $("addCardButton").addEventListener("click", () => openEditor(null));
 
+  // CARD EDITOR
+
   function clearImagePreview(side) {
     const preview = $(side + "Preview");
     preview.removeAttribute("src");
     preview.classList.add("hidden");
-
     $("remove" + side[0].toUpperCase() + side.slice(1) + "Image")
       .classList.add("hidden");
   }
 
   function setImagePreview(side, data) {
     const preview = $(side + "Preview");
-    const removeButton =
-      $("remove" + side[0].toUpperCase() + side.slice(1) + "Image");
+    const remove = $("remove" + side[0].toUpperCase() +
+      side.slice(1) + "Image");
 
-    if (!data) {
-      clearImagePreview(side);
-      return;
-    }
+    if (!data) return clearImagePreview(side);
 
     preview.src = data;
     preview.classList.remove("hidden");
-    removeButton.classList.remove("hidden");
+    remove.classList.remove("hidden");
   }
 
-  function openEditor(cardId) {
+  function openEditor(id) {
     const set = currentSet();
     if (!set) return;
 
-    editingCardId = cardId;
+    editingCardId = id;
     frontImageData = "";
     backImageData = "";
-
     $("cardForm").reset();
     clearImagePreview("front");
     clearImagePreview("back");
 
-    const card = cardId
-      ? set.cards.find(item => item.id === cardId)
-      : null;
-
+    const card = id ? set.cards.find(item => item.id === id) : null;
     $("editorTitle").textContent = card ? "Edit card" : "Add card";
 
     if (card) {
       $("frontText").value = card.front;
       $("backText").value = card.back;
       $("hintsText").value = card.hints.join("\n");
-
       frontImageData = card.frontImage || "";
       backImageData = card.backImage || "";
-
       setImagePreview("front", frontImageData);
       setImagePreview("back", backImageData);
     }
 
     showView("editorView");
-    $("frontText").focus();
   }
 
-  function deleteCard(cardId) {
+  function deleteCard(id) {
     const set = currentSet();
-    if (!set) return;
+    if (!set || !confirm("Delete this card?")) return;
 
-    if (!set.cards.some(card => card.id === cardId)) return;
-    if (!confirm("Delete this card?")) return;
-
-    set.cards = set.cards.filter(card => card.id !== cardId);
+    set.cards = set.cards.filter(card => card.id !== id);
     saveSets();
     renderSet();
   }
 
   function readImageFile(file, callback) {
     if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      alert("Please choose an image file.");
-      return;
-    }
-
-    if (file.size > MAX_IMAGE_SIZE) {
-      alert("Please choose an image smaller than 2 MB.");
-      return;
-    }
+    if (!file.type.startsWith("image/")) return alert("Choose an image file.");
+    if (file.size > MAX_IMAGE_SIZE) return alert("Choose an image smaller than 2 MB.");
 
     const reader = new FileReader();
     reader.onload = () => callback(String(reader.result));
-    reader.onerror = () => alert("Could not read this image.");
+    reader.onerror = () => alert("Could not read the image.");
     reader.readAsDataURL(file);
   }
 
@@ -808,36 +737,25 @@ label {
     event.preventDefault();
 
     const set = currentSet();
-    if (!set) return;
-
     const front = $("frontText").value.trim();
     const back = $("backText").value.trim();
+    if (!set || !front || !back) return alert("Enter both a question and an answer.");
 
-    if (!front || !back) {
-      alert("Enter both a question and an answer.");
-      return;
-    }
-
-    const hints = $("hintsText").value
-      .split("\n")
-      .map(hint => hint.trim())
-      .filter(Boolean);
+    const hints = $("hintsText").value.split("\n")
+      .map(hint => hint.trim()).filter(Boolean);
 
     if (editingCardId) {
       const card = set.cards.find(item => item.id === editingCardId);
       if (!card) return;
 
-      card.front = front;
-      card.back = back;
-      card.hints = hints;
-      card.frontImage = frontImageData;
-      card.backImage = backImageData;
+      Object.assign(card, {
+        front, back, hints,
+        frontImage: frontImageData,
+        backImage: backImageData
+      });
     } else {
       set.cards.push({
-        id: makeId(),
-        front,
-        back,
-        hints,
+        id: makeId(), front, back, hints,
         frontImage: frontImageData,
         backImage: backImageData
       });
@@ -848,28 +766,20 @@ label {
     showView("setView");
   });
 
-  // STUDY SESSION
-
-  $("studyButton").addEventListener("click", startStudy);
+  // STUDY
 
   function shuffle(items) {
     const result = items.slice();
-
     for (let i = result.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [result[i], result[j]] = [result[j], result[i]];
     }
-
     return result;
   }
 
   function startStudy() {
     const set = currentSet();
-
-    if (!set || set.cards.length === 0) {
-      alert("Add at least one card before studying.");
-      return;
-    }
+    if (!set || !set.cards.length) return alert("Add at least one card first.");
 
     studyCards = shuffle(set.cards);
     studyIndex = 0;
@@ -883,43 +793,38 @@ label {
     showView("studyView");
   }
 
+  $("studyButton").addEventListener("click", startStudy);
+
   function activeStudyCard() {
     return studyCards[studyIndex] || null;
   }
 
   function renderStudyCard() {
     const card = activeStudyCard();
-
-    if (!card) {
-      finishStudy();
-      return;
-    }
+    if (!card) return finishStudy();
 
     isFlipped = false;
     hintsShown = 0;
 
     $("studyProgress").textContent =
       "Card " + (studyIndex + 1) + " of " + studyCards.length;
-
     $("studySideLabel").textContent = "QUESTION";
     $("studyText").textContent = card.front;
     $("studyImage").replaceChildren();
 
     if (card.frontImage) {
-      const image = document.createElement("img");
-      image.src = card.frontImage;
-      image.alt = "Question image";
-      image.className = "card-image";
-      $("studyImage").append(image);
+      const img = document.createElement("img");
+      img.src = card.frontImage;
+      img.alt = "Question image";
+      img.className = "card-image";
+      $("studyImage").append(img);
     }
 
     $("hintArea").replaceChildren();
-
-    // Reset the letter hints for every card.
     prepareLetterHints(card.back);
 
     $("flipButton").textContent = "Show answer";
-    $("hintButton").disabled = card.hints.length === 0;
+    $("hintButton").disabled = !card.hints.length;
     $("hintButton").textContent =
       card.hints.length ? "Show hint (0/" + card.hints.length + ")" : "No hints";
 
@@ -932,19 +837,17 @@ label {
     if (!card) return;
 
     isFlipped = !isFlipped;
-
     $("studySideLabel").textContent = isFlipped ? "ANSWER" : "QUESTION";
     $("studyText").textContent = isFlipped ? card.back : card.front;
     $("studyImage").replaceChildren();
 
     const imageData = isFlipped ? card.backImage : card.frontImage;
-
     if (imageData) {
-      const image = document.createElement("img");
-      image.src = imageData;
-      image.alt = isFlipped ? "Answer image" : "Question image";
-      image.className = "card-image";
-      $("studyImage").append(image);
+      const img = document.createElement("img");
+      img.src = imageData;
+      img.alt = isFlipped ? "Answer image" : "Question image";
+      img.className = "card-image";
+      $("studyImage").append(img);
     }
 
     $("flipButton").textContent = isFlipped ? "Show question" : "Show answer";
@@ -952,16 +855,12 @@ label {
 
   function showHint() {
     const card = activeStudyCard();
-
     if (!card || hintsShown >= card.hints.length) return;
 
     hintsShown++;
-
     const hint = document.createElement("div");
     hint.className = "hint-box";
-    hint.textContent =
-      "Hint " + hintsShown + ": " + card.hints[hintsShown - 1];
-
+    hint.textContent = "Hint " + hintsShown + ": " + card.hints[hintsShown - 1];
     $("hintArea").append(hint);
 
     $("hintButton").textContent =
@@ -969,48 +868,31 @@ label {
         ? "Show next hint (" + hintsShown + "/" + card.hints.length + ")"
         : "All hints shown";
 
-    if (hintsShown >= card.hints.length) {
-      $("hintButton").disabled = true;
-    }
+    $("hintButton").disabled = hintsShown >= card.hints.length;
   }
 
-  // LETTER HINTS
-
+  // Reveal letters in order: first, second, last, third, second-last...
   function prepareLetterHints(answer) {
     const chars = Array.from(answer);
     const positions = [];
 
-    // Count only letters and numbers. Spaces and punctuation remain visible.
     chars.forEach((char, index) => {
-      if (/[\p{L}\p{N}]/u.test(char)) {
-        positions.push(index);
-      }
+      if (/[\p{L}\p{N}]/u.test(char)) positions.push(index);
     });
 
     letterRevealOrder = [];
-
     let left = 0;
     let right = positions.length - 1;
 
-    // Order: first, second, last, third, second-last, and so on.
     while (left <= right) {
-      letterRevealOrder.push(positions[left]);
-      left++;
+      letterRevealOrder.push(positions[left++]);
 
-      if (left <= right) {
-        letterRevealOrder.push(positions[left]);
-        left++;
-      }
-
-      if (left <= right) {
-        letterRevealOrder.push(positions[right]);
-        right--;
-      }
+      if (left <= right) letterRevealOrder.push(positions[left++]);
+      if (left <= right) letterRevealOrder.push(positions[right--]);
     }
 
     letterRevealLimit = Math.ceil(positions.length * 0.8);
     revealedLetterPositions = new Set();
-
     renderLetterHints(answer);
   }
 
@@ -1018,11 +900,10 @@ label {
     const area = $("letterRevealArea");
     area.replaceChildren();
 
-    const chars = Array.from(answer);
     const box = document.createElement("div");
     box.className = "letter-reveal";
 
-    chars.forEach((char, index) => {
+    Array.from(answer).forEach((char, index) => {
       const span = document.createElement("span");
 
       if (!/[\p{L}\p{N}]/u.test(char)) {
@@ -1052,7 +933,6 @@ label {
 
   function revealNextLetter() {
     const card = activeStudyCard();
-
     if (!card || revealedLetterPositions.size >= letterRevealLimit) return;
 
     const nextPosition = letterRevealOrder.find(
@@ -1067,13 +947,10 @@ label {
 
   function recordCurrentCard() {
     const card = activeStudyCard();
-
     if (!card || sessionRecordedIds.has(card.id)) return;
 
     sessionRecordedIds.add(card.id);
-
     sessionResults.push({
-      id: card.id,
       front: card.front,
       hintsUsed: hintsShown,
       lettersRevealed: revealedLetterPositions.size,
@@ -1084,10 +961,7 @@ label {
   function nextCard() {
     recordCurrentCard();
 
-    if (studyIndex >= studyCards.length - 1) {
-      finishStudy();
-      return;
-    }
+    if (studyIndex >= studyCards.length - 1) return finishStudy();
 
     studyIndex++;
     renderStudyCard();
@@ -1101,13 +975,8 @@ label {
 
     recordCurrentCard();
 
-    const totalHints = sessionResults.reduce(
-      (sum, result) => sum + result.hintsUsed, 0
-    );
-
-    const totalLetters = sessionResults.reduce(
-      (sum, result) => sum + result.lettersRevealed, 0
-    );
+    const totalHints = sessionResults.reduce((sum, item) => sum + item.hintsUsed, 0);
+    const totalLetters = sessionResults.reduce((sum, item) => sum + item.lettersRevealed, 0);
 
     $("summaryText").textContent =
       "Reviewed " + sessionResults.length + " of " + studyCards.length +
@@ -1128,8 +997,7 @@ label {
       const detail = document.createElement("div");
       detail.className = "muted small";
       detail.textContent =
-        result.hintsUsed + (result.hintsUsed === 1 ? " hint" : " hints") +
-        " revealed · " +
+        result.hintsUsed + " hints · " +
         result.lettersRevealed + " letters revealed · " +
         (result.revealedAnswer ? "answer viewed" : "answer not viewed");
 
@@ -1148,7 +1016,7 @@ label {
   $("finishButton").addEventListener("click", finishStudy);
 
   $("exitStudyButton").addEventListener("click", () => {
-    if (confirm("Exit this study session? Your session summary will not be saved.")) {
+    if (confirm("Exit this study session? Its summary will not be saved.")) {
       renderSet();
       showView("setView");
     }
@@ -1167,10 +1035,11 @@ label {
   });
 
   document.addEventListener("keydown", event => {
-    const editorVisible = !$("editorView").classList.contains("hidden");
-    const studyVisible = !$("studyView").classList.contains("hidden");
+    const studying = !$("studyView").classList.contains("hidden");
+    const editing = !$("editorView").classList.contains("hidden");
+    const helpOpen = !$("offlineDialog").classList.contains("hidden");
 
-    if (!studyVisible || editorVisible) return;
+    if (!studying || editing || helpOpen) return;
 
     if (event.code === "Space") {
       event.preventDefault();
@@ -1192,10 +1061,11 @@ label {
       sets
     }, null, 2);
 
-    const blob = new Blob([data], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const url = URL.createObjectURL(
+      new Blob([data], { type: "application/json" })
+    );
 
+    const link = document.createElement("a");
     link.href = url;
     link.download = "flashcards-backup.json";
     document.body.append(link);
@@ -1206,70 +1076,50 @@ label {
 
   // IMPORT BACKUP
 
-  $("importButton").addEventListener("click", () => {
-    $("importFile").click();
-  });
+  $("importButton").addEventListener("click", () => $("importFile").click());
 
   $("importFile").addEventListener("change", async event => {
     const file = event.target.files[0];
     if (!file) return;
 
     try {
-      const text = await file.text();
-      const parsed = JSON.parse(text);
+      const parsed = JSON.parse(await file.text());
       const importedSets = Array.isArray(parsed) ? parsed : parsed.sets;
 
       if (!Array.isArray(importedSets)) {
-        throw new Error("The file does not contain a valid set list.");
+        throw new Error("This file does not contain a valid set list.");
       }
 
-      const validSets = importedSets
-        .filter(set =>
-          set &&
-          typeof set.name === "string" &&
-          Array.isArray(set.cards)
-        )
-        .map(set => ({
+      const validSets = importedSets.filter(set =>
+        set && typeof set.name === "string" && Array.isArray(set.cards)
+      ).map(set => ({
+        id: makeId(),
+        name: set.name.trim() || "Imported set",
+        cards: set.cards.filter(card =>
+          card && typeof card.front === "string" &&
+          typeof card.back === "string"
+        ).map(card => ({
           id: makeId(),
-          name: set.name.trim() || "Imported set",
-          cards: set.cards
-            .filter(card =>
-              card &&
-              typeof card.front === "string" &&
-              typeof card.back === "string"
-            )
-            .map(card => ({
-              id: makeId(),
-              front: card.front,
-              back: card.back,
-              hints: Array.isArray(card.hints)
-                ? card.hints.filter(hint => typeof hint === "string")
-                : [],
-              frontImage:
-                typeof card.frontImage === "string" ? card.frontImage : "",
-              backImage:
-                typeof card.backImage === "string" ? card.backImage : ""
-            }))
-        }));
+          front: card.front,
+          back: card.back,
+          hints: Array.isArray(card.hints) ? card.hints : [],
+          frontImage: card.frontImage || "",
+          backImage: card.backImage || ""
+        }))
+      }));
 
-      if (!validSets.length) {
-        throw new Error("No valid flashcard sets were found.");
-      }
+      if (!validSets.length) throw new Error("No valid sets were found.");
 
-      if (!confirm(
-        "Import " + validSets.length +
-        " set(s)? These will be added to your existing sets."
-      )) {
-        return;
-      }
+      if (!confirm("Import " + validSets.length +
+          " set(s) and add them to your existing sets?")) return;
 
-      const previousSets = sets;
+      const oldSets = sets;
       sets = [...sets, ...validSets];
 
       if (!saveSets()) {
-        sets = previousSets;
+        sets = oldSets;
         saveSets();
-        alert("Import failed because browser storage may be full.");
+        alert("Import failed. Browser storage may be full.");
         return;
       }
 
@@ -1277,13 +1127,22 @@ label {
       showView("homeView");
       alert("Import complete.");
     } catch (error) {
-      alert("Could not import this file: " + error.message);
+      alert("Could not import: " + error.message);
     } finally {
       $("importFile").value = "";
     }
   });
 
   renderHome();
+
+  // Register the offline cache.
+  if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(error => {
+        console.error("Service worker registration failed:", error);
+      });
+    });
+  }
 })();
 </script>
 </body>
