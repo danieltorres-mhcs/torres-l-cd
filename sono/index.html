@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sono</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1b1c1e;--fg:#ececea;--mut:#a0a09b;--line:#36373c;--acc:#c2410c}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+body{font:15px/1.4 'Familjen Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--fg);height:100dvh;display:grid;grid-template:1fr auto/220px 1fr;overflow:hidden}
+button,input,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;padding:8px;display:inline-flex;align-items:center;gap:6px;text-align:left}
+button:hover{background:#2a2b2f}
+:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+svg{display:block}
+nav{border-right:1px solid var(--line);padding:20px 12px;overflow:auto}
+nav b{display:block;font-weight:600;font-size:20px;padding:0 12px 16px}
+nav button{width:100%;padding:10px 12px}
+nav button[aria-current=true]{background:#2c2d31;font-weight:600}
+nav p{color:var(--mut);padding:20px 12px 6px;font-size:13px}
+main{overflow:auto;padding:28px 32px 40px}
+h1{font-size:30px;font-weight:600;margin-bottom:16px}
+h2{font-size:18px;font-weight:600}
+.meta,small,.al,.du{color:var(--mut)}
+.bar{display:flex;gap:8px;margin-bottom:16px}
+.bar button,.btn{border:1px solid var(--line);padding:8px 14px;border-radius:2px;justify-content:center}
+.btn.pri{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:600}
+.row{display:grid;grid-template-columns:10px 1fr 1fr 48px auto;gap:16px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.chip{width:10px;height:36px;display:block}
+.t{flex-direction:column;align-items:flex-start;gap:0;width:100%}
+.row.on .t{font-weight:600}
+.ac{display:flex}
+input[type=text],input[type=email],input[type=password],input[type=search],textarea{width:100%;background:#232427;border:1px solid var(--line);border-radius:2px;padding:10px 12px;margin:4px 0 14px}
+input[type=color]{width:56px;height:36px;border:1px solid var(--line);background:none;padding:2px;margin:4px 0 14px;display:block}
+label{display:block;font-weight:600;font-size:14px}
+form{max-width:560px}
+.none{color:var(--mut);max-width:48ch;padding:8px 0}
+footer{grid-column:1/-1;border-top:1px solid var(--line);padding:8px 16px 10px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:0 12px;background:var(--bg)}
+#np{min-width:0}#np b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sk{grid-column:1/-1;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mut)}
+.sk input{flex:1;accent-color:var(--fg)}
+#ly{grid-area:1/1/2/-1;z-index:2;display:flex;flex-direction:column;color:#fff;background:color-mix(in srgb,var(--acc) 42%,#101010);padding:24px 32px 0}
+#ly header{display:flex;justify-content:space-between;gap:16px;padding-bottom:16px}
+#ly p{opacity:.8}
+#lt{overflow:auto;flex:1;padding:8vh 0 40vh}
+#lt .l{display:block;width:100%;font-size:clamp(22px,3.4vw,38px);line-height:1.25;font-weight:600;padding:8px 0;opacity:.5;color:#fff}
+#lt button.l:hover{background:none;opacity:.8}
+#lt .l.on,#lt p.l{opacity:1}
+dialog{background:#26272b;color:var(--fg);border:1px solid var(--line);padding:22px;width:min(420px,92vw);margin:auto}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog .bar{margin:12px 0 0}
+dialog .pl{width:100%;border-bottom:1px solid var(--line)}
+#ts{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;z-index:9;max-width:90vw}
+@media(max-width:720px){
+body{grid-template:auto 1fr auto/1fr}
+nav{display:flex;gap:4px;overflow-x:auto;border:0;border-bottom:1px solid var(--line);padding:8px}
+nav b,nav p{display:none}nav button{width:auto;white-space:nowrap}
+main{padding:20px 16px}.al{display:none}
+.row{grid-template-columns:10px 1fr 40px auto}
+#ly{grid-area:1/1/3/-1;padding:16px 16px 0}}
+</style></head>
+<body>
+<nav aria-label="Main"><b>Sono</b>
+<button data-act="nav" data-v="lib">Library</button>
+<button data-act="nav" data-v="search">Search</button>
+<button data-act="nav" data-v="dl">Downloads</button>
+<p>Playlists</p><div id="pls"></div>
+<button data-act="newpl">New playlist</button></nav>
+<main id="main"></main>
+<section id="ly" hidden aria-label="Lyrics"><header><div><h2 id="lh"></h2><p id="ld"></p></div><button data-act="lyr" aria-label="Close lyrics" id="lx"></button></header><div id="lt"></div></section>
+<footer>
+<div id="np"><b>Nothing playing</b><small>Pick a song from your library</small></div>
+<div class="ac"><button data-act="prev" aria-label="Previous song" id="bp"></button><button data-act="toggle" aria-label="Play" id="bt"></button><button data-act="next" aria-label="Next song" id="bn"></button><button data-act="lyr" aria-label="Lyrics" id="bl"></button></div>
+<div class="sk"><span id="tc">0:00</span><input type="range" id="sk" min="0" max="1000" value="0" aria-label="Seek"><span id="td">0:00</span></div>
+</footer>
+<dialog id="dlg"></dialog><div id="ts" role="status" hidden></div>
+
+<script src="https://unpkg.com/reicon@1.2.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.js"></script>
+<script>
+// 1. Paste your Supabase project URL and anon (public) key here.
+const CFG={url:'https://cxggfzruyfxmqnmmmraf.supabase.co',key:'sb_publishable_Wd3AdWQ_YSs2TzRSoHhECA_3_0PWfF3'};
+
+const $=(s,e=document)=>e.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=t=>isFinite(t)&&t>0?Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0'):'0:00';
+// Reicon names to try for each icon. If one renders as text, look up the right name at reicon.dev/icons and edit it here.
+const IC={play:['Play'],pause:['Pause'],next:['SkipNext','NextSong','Next'],prev:['SkipPrevious','PreviousSong','Previous'],add:['AddCircle','Add','PlaylistAdd'],dl:['Download','DownloadMinimalistic'],ok:['CheckCircle','Check'],x:['CloseCircle','Close'],lyr:['Microphone','Text','Document']};
+// If none of the names above exist, search the library's own export names with these patterns.
+const RX={play:/^play$/i,pause:/^pause$/i,next:/^(skip-?next|next|next-?track|forward)$/i,prev:/^(skip-?(prev|previous)|prev|previous|(prev|previous)-?track|backward)$/i,add:/^add-?circle$|^add$/i,dl:/^download$/i,ok:/^check-?circle$|^check$/i,x:/^close-?circle$|^close$/i,lyr:/^(microphone|mic|text)$/i};
+const ic=(k,l,w)=>{const R=window.reicon;if(R){let f=IC[k].map(n=>R[n]).find(x=>x&&x.toSvg);if(!f){const n=Object.keys(R).find(n=>RX[k].test(n));f=n&&R[n]}if(f&&f.toSvg)return f.toSvg({size:22,weight:w||'Outline'})}return esc(l)};
+const sb=CFG.url&&window.supabase?supabase.createClient(CFG.url,CFG.key,{auth:{experimental:{passkey:true}}}):null;
+const src=s=>`${CFG.url}/storage/v1/object/public/music/${encodeURI(s.audio_path)}`;
+const store=(k,d)=>{try{return JSON.parse(localStorage[k])}catch{return d}};
+
+let songs=store('songs',[]),pl=store('pl',[]),off=new Set(),view='lib',vis=[],cur=null,queue=[],idx=0,lines=[],li=-1,q='';
+const a=new Audio(),savePl=()=>localStorage.pl=JSON.stringify(pl);
+
+// Offline audio lives in IndexedDB as blobs.
+const idb=new Promise(r=>{const o=indexedDB.open('sono',1);o.onupgradeneeded=()=>o.result.createObjectStore('a');o.onsuccess=()=>r(o.result)});
+const tx=async(m,f)=>{const d=await idb;return new Promise((res,rej)=>{const r=f(d.transaction('a',m).objectStore('a'));r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})};
+
+let tt;const toast=m=>{const t=$('#ts');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,4500)};
+const dlg=h=>{const d=$('#dlg');d.innerHTML=h;if(!d.open)d.showModal();const i=$('input[type=text]',d);i&&i.focus()};
+
+function parseLrc(t){const L=[];for(const l of(t||'').split('\n')){const m=[...l.matchAll(/\[(\d+):(\d+(?:\.\d+)?)\]/g)],x=l.replace(/\[[^\]]*\]/g,'').trim();m.forEach(k=>L.push({t:+k[1]*60+ +k[2],x}))}return L.sort((p,r)=>p.t-r.t)}
+
+/* ---------- data ---------- */
+async function loadSongs(){
+  off=new Set(await tx('readonly',s=>s.getAllKeys()).catch(()=>[]));
+  if(sb){try{const{data,error}=await sb.from('songs').select('*').order('created_at',{ascending:false});if(error)throw error;songs=data;localStorage.songs=JSON.stringify(data)}
+    catch{toast(songs.length?'You’re offline. Showing the songs saved on this device.':'Couldn’t load songs. Check your connection and Supabase settings.')}}
+  render();
+}
+
+/* ---------- views ---------- */
+const row=(s,i,m)=>{const o=off.has(s.id);return`<div class="row${cur&&cur.id===s.id?' on':''}" data-s="${s.id}"><i class="chip" style="background:${esc(s.color)}"></i><button class="t" data-act="play" data-i="${i}">${esc(s.title)}<small>${esc(s.artist)}</small></button><span class="al">${esc(s.album)}</span><span class="du">${fmt(s.duration)}</span><span class="ac">${m==='pl'?`<button data-act="rm" data-s="${s.id}" aria-label="Remove from playlist">${ic('x','Remove')}</button>`:`<button data-act="add" data-s="${s.id}" aria-label="Add to playlist">${ic('add','Add')}</button>`}<button data-act="dl" data-s="${s.id}" aria-label="${o?'Remove download':'Download for offline'}">${o?ic('ok','Saved','Filled'):ic('dl','Save')}</button></span></div>`};
+const list=(arr,m)=>(vis=arr).map((s,i)=>row(s,i,m)).join('');
+const none=t=>`<p class="none">${t}</p>`;
+
+function navPl(){$('#pls').innerHTML=pl.map(p=>`<button data-act="nav" data-v="pl:${p.id}">${esc(p.name)}</button>`).join('');$$('nav [data-v]').forEach(b=>b.setAttribute('aria-current',b.dataset.v===view))}
+
+function render(){
+  if(location.hash==='#admin')return admin();
+  navPl();const m=$('#main');
+  if(view==='lib')m.innerHTML='<h1>Library</h1>'+(songs.length?list(songs):none(sb?'No songs yet. Sign in at #admin to publish the first one.':'Not connected. Add your Supabase URL and anon key at the top of index.html.'));
+  else if(view==='search'){m.innerHTML=`<h1>Search</h1><input type="search" id="q" aria-label="Search songs" placeholder="Title, artist or album" value="${esc(q)}"><div id="lst"></div>`;fill();$('#q').focus()}
+  else if(view==='dl')m.innerHTML='<h1>Downloads</h1>'+(off.size?list(songs.filter(s=>off.has(s.id))):none('Nothing saved yet. Use the download button on a song to play it without a connection.'));
+  else{const p=pl.find(x=>'pl:'+x.id===view);if(!p){view='lib';return render()}
+    const arr=p.ids.map(id=>songs.find(s=>s.id===id)).filter(Boolean);
+    m.innerHTML=`<h1>${esc(p.name)}</h1><p class="meta" style="margin-bottom:12px">${arr.length} song${arr.length===1?'':'s'}</p><div class="bar"><button data-act="pldl">Download all</button><button data-act="pldel">Delete playlist</button></div>`+(arr.length?list(arr,'pl'):none('This playlist is empty. Use the add button on any song to put it here.'))}
+}
+function fill(){const k=q.trim().toLowerCase(),r=k?songs.filter(s=>[s.title,s.artist,s.album,s.description].join(' ').toLowerCase().includes(k)):[];
+  $('#lst').innerHTML=k?(r.length?list(r):none(`No songs match “${esc(q)}”. Try a different title or artist.`)):''}
+
+/* ---------- playback ---------- */
+async function load(i){
+  const s=queue[i];if(!s)return;cur=s;idx=i;let u=src(s);
+  if(off.has(s.id)){const b=await tx('readonly',x=>x.get(s.id)).catch(()=>null);if(cur!==s)return;if(b){URL.revokeObjectURL(a._u);u=a._u=URL.createObjectURL(b)}}
+  a.src=u;setNow();a.play().catch(()=>{})}
+function setNow(){
+  const s=cur;document.documentElement.style.setProperty('--acc',s.color||'#c2410c');
+  $('#np').innerHTML=`<b>${esc(s.title)}</b><small>${esc(s.artist)}${s.album?' — '+esc(s.album):''}</small>`;
+  $('#lh').textContent=s.title;$('#ld').textContent=[s.artist,s.album,s.description].filter(Boolean).join(' — ');
+  document.title=s.title+' — '+s.artist;
+  lines=parseLrc(s.lyrics);li=-1;const plain=!lines.length,L=plain?(s.lyrics||'').split('\n').filter(x=>x.trim()).map(x=>({x})):lines;
+  $('#lt').innerHTML=L.length?L.map((l,i)=>plain?`<p class="l">${esc(l.x)}</p>`:`<button class="l" data-act="seek" data-t="${l.t}">${esc(l.x)||'&nbsp;'}</button>`).join(''):none('No lyrics for this song.');
+  $$('.row').forEach(r=>r.classList.toggle('on',r.dataset.s===s.id));
+  if('mediaSession' in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:s.title,artist:s.artist,album:s.album||''});
+}
+const nx=()=>{if(idx+1<queue.length)load(idx+1)},pv=()=>{if(a.currentTime>3||idx===0)a.currentTime=0;else load(idx-1)};
+function upd(){
+  const d=a.duration||0;$('#tc').textContent=fmt(a.currentTime);$('#td').textContent=fmt(d||cur?.duration);
+  if(!$('#sk').matches(':active'))$('#sk').value=d?a.currentTime/d*1000:0;
+  if(lines.length){let n=-1;for(let i=0;i<lines.length;i++){if(lines[i].t<=a.currentTime+.15)n=i;else break}
+    if(n!==li){li=n;const E=$$('#lt .l');E.forEach((e,i)=>e.classList.toggle('on',i===n));
+      if(n>=0&&!$('#ly').hidden)E[n].scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}}}
+const loop=()=>{upd();if(!a.paused)requestAnimationFrame(loop)};
+a.addEventListener('play',()=>{loop();$('#bt').innerHTML=ic('pause','Pause','Filled');$('#bt').setAttribute('aria-label','Pause')});
+a.addEventListener('pause',()=>{$('#bt').innerHTML=ic('play','Play','Filled');$('#bt').setAttribute('aria-label','Play')});
+['timeupdate','seeked','loadedmetadata'].forEach(e=>a.addEventListener(e,upd));
+a.addEventListener('ended',nx);
+a.addEventListener('error',()=>{if(a.src)toast(navigator.onLine?'This song couldn’t be played. Try another or reload.':'You’re offline and this song isn’t downloaded.')});
+$('#sk').addEventListener('input',e=>{if(a.duration)a.currentTime=e.target.value/1000*a.duration});
+if('mediaSession' in navigator){const m=navigator.mediaSession;m.setActionHandler('play',()=>a.play());m.setActionHandler('pause',()=>a.pause());m.setActionHandler('nexttrack',nx);m.setActionHandler('previoustrack',pv)}
+
+/* ---------- downloads ---------- */
+async function save(s){
+  if(off.has(s.id)){await tx('readwrite',x=>x.delete(s.id));off.delete(s.id);return true}
+  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();const r=await fetch(src(s));if(!r.ok)throw 0;const b=await r.blob();await tx('readwrite',x=>x.put(b,s.id));off.add(s.id);return true}
+  catch{toast(`Couldn’t download “${s.title}”. Check your connection and try again.`);return false}}
+const byId=id=>songs.find(s=>s.id===id);
+
+/* ---------- actions ---------- */
+const act={
+  nav:({v})=>{view=v;if(location.hash==='#admin')history.replaceState(null,'',location.pathname);render()},
+  play:({i})=>{queue=vis;load(+i)},
+  toggle:()=>{cur?(a.paused?a.play():a.pause()):vis.length&&(queue=vis,load(0))},
+  next:nx,prev:pv,
+  lyr:()=>{if(!cur)return toast('Play a song to see its lyrics.');const l=$('#ly');l.hidden=!l.hidden;if(!l.hidden){li=-1;upd()}},
+  seek:({t})=>{a.currentTime=+t;a.play()},
+  dl:async({s})=>{const x=byId(s);toast(off.has(s)?'Removing download…':`Downloading “${x.title}”…`);if(await save(x)){toast(off.has(s)?`“${x.title}” is available offline.`:'Download removed.');render()}},
+  add:({s})=>{dlg(`<h2>Add to playlist</h2>${pl.map(p=>`<button class="pl" data-act="pladd" data-p="${p.id}" data-s="${s}">${esc(p.name)}</button>`).join('')}<form data-f="newpl" data-s="${s}"><label for="pn" style="margin-top:14px">New playlist name</label><input type="text" id="pn" name="n" required><div class="bar"><button class="btn pri">Create and add</button><button type="button" class="btn" data-act="close">Cancel</button></div></form>`)},
+  pladd:({p,s})=>{const x=pl.find(y=>y.id===p);if(!x.ids.includes(s))x.ids.push(s);savePl();$('#dlg').close();toast(`Added to ${x.name}.`)},
+  newpl:()=>dlg(`<form data-f="newpl"><h2>New playlist</h2><label for="pn" style="margin-top:14px">Name</label><input type="text" id="pn" name="n" required><div class="bar"><button class="btn pri">Create playlist</button><button type="button" class="btn" data-act="close">Cancel</button></div></form>`),
+  rm:({s})=>{const p=pl.find(x=>'pl:'+x.id===view);p.ids=p.ids.filter(i=>i!==s);savePl();render()},
+  pldel:()=>{const p=pl.find(x=>'pl:'+x.id===view);dlg(`<h2>Delete “${esc(p.name)}”?</h2><p class="meta">The songs stay in your library. This can’t be undone.</p><div class="bar"><button class="btn pri" data-act="pldel2">Delete playlist</button><button class="btn" data-act="close">Keep playlist</button></div>`)},
+  pldel2:()=>{pl=pl.filter(x=>'pl:'+x.id!==view);savePl();view='lib';$('#dlg').close();render()},
+  pldl:async()=>{const p=pl.find(x=>'pl:'+x.id===view);let n=0;for(const id of p.ids){const s=byId(id);if(s&&!off.has(id)){toast(`Downloading “${s.title}”…`);if(await save(s))n++}}toast(n?`${n} song${n===1?'':'s'} downloaded.`:'Everything here is already downloaded.');render()},
+  close:()=>$('#dlg').close(),
+  del:({s})=>{const x=byId(s);dlg(`<h2>Delete “${esc(x.title)}”?</h2><p class="meta">This removes the song and its audio file for everyone. This can’t be undone.</p><div class="bar"><button class="btn pri" data-act="del2" data-s="${s}">Delete song</button><button class="btn" data-act="close">Keep song</button></div>`)},
+  del2:async({s})=>{const x=byId(s);$('#dlg').close();const{data:gone,error}=await sb.from('songs').delete().eq('id',s).select();if(error||!gone||!gone.length)return toast('Couldn’t delete the song. You can only delete songs you published.');await sb.storage.from('music').remove([x.audio_path]);await loadSongs();toast('Song deleted.')},
+  lrc:findLrc,
+  cancel:()=>admin(),
+  edit:({s})=>{const x=byId(s),f=$('#af');editing=x;dur=x.duration||0;f.title.value=x.title;f.artist.value=x.artist;f.album.value=x.album||'';f.description.value=x.description||'';f.color.value=x.color;f.lyrics.value=x.lyrics||'';f.file.required=false;f.file.value='';
+    $('#fh').textContent='Edit “'+x.title+'”';$('#fl').textContent='Replace audio file (optional)';$('#pb').textContent='Save changes';$('#cx').hidden=false;$('#main').scrollTop=0;st('')},
+  rmuser:({id,e})=>dlg(`<h2>Remove ${esc(e)}?</h2><p class="meta">Their account is deleted and they can no longer publish or edit. Songs they published stay in the library.</p><div class="bar"><button class="btn pri" data-act="rmuser2" data-id="${id}">Remove person</button><button class="btn" data-act="close">Keep person</button></div>`),
+  rmuser2:async({id})=>{$('#dlg').close();const{data,error}=await fn({action:'delete',user_id:id});if(error||data?.error)return toast('Couldn’t remove them: '+(data?.error||error.message));toast('Person removed.');ppl()},
+  out:async()=>{await sb.auth.signOut();admin()},
+  pk:async()=>{st('Waiting for your passkey…');const{error}=await sb.auth.signInWithPasskey();error?st('Couldn’t sign in with a passkey. Check that passkeys are enabled in Supabase for this domain, or use your password.'):admin()},
+  pkadd:async()=>{const{error}=await sb.auth.registerPasskey();if(error)return toast('Couldn’t add the passkey: '+error.message);toast('Passkey added.');pks()},
+  pkdel:async({id})=>{const{error}=await sb.auth.passkey.delete({passkeyId:id});if(error)return toast('Couldn’t remove the passkey: '+error.message);toast('Passkey removed.');pks()}
+};
+async function ppl(){const e=$('#ppl');if(!e)return;const{data,error}=await fn({action:'list'});
+  e.innerHTML=error||!data||data.error?none('Couldn’t load people. Deploy the manage-users function first (see the setup steps).'):data.users.map(u=>`<div class="row" style="grid-template-columns:1fr auto"><span>${esc(u.email)}<small style="display:block">${u.role==='owner'?'Owner':'Can publish and edit their own songs'}</small></span>${u.role==='owner'?'':`<button data-act="rmuser" data-id="${u.user_id}" data-e="${esc(u.email)}">Remove</button>`}</div>`).join('')}
+async function pks(){const e=$('#pks');if(!e)return;const{data,error}=await sb.auth.passkey.list();
+  e.innerHTML=error?none('Couldn’t load passkeys: '+esc(error.message)):data&&data.length?data.map(p=>`<div class="row" style="grid-template-columns:1fr auto"><span>${esc(p.friendly_name||'Passkey')}<small style="display:block">Added ${new Date(p.created_at).toLocaleDateString()}</small></span><button data-act="pkdel" data-id="${p.id}">Remove</button></div>`).join(''):none('No passkeys yet. Add one to sign in without a password.')}
+const forms={
+  newpl:f=>{const n=f.n.value.trim();if(!n)return;const p={id:crypto.randomUUID(),name:n,ids:f.dataset.s?[f.dataset.s]:[]};pl.push(p);savePl();$('#dlg').close();if(f.dataset.s){toast(`Added to ${n}.`);navPl()}else{view='pl:'+p.id;render()}},
+  login:async f=>{st('Signing in…');const{error}=await sb.auth.signInWithPassword({email:f.email.value,password:f.password.value});error?st('Couldn’t sign in. Check your email and password.'):admin()},
+  pub:publish,
+  adduser:async f=>{const{data,error}=await fn({action:'create',email:f.email.value.trim(),password:f.password.value});if(error||data?.error)return toast('Couldn’t add them: '+(data?.error||error.message));toast(`Added ${f.email.value.trim()}. Share the password with them.`);f.reset();ppl()}
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b)act[b.dataset.act]?.(b.dataset)});
+document.addEventListener('submit',e=>{e.preventDefault();forms[e.target.dataset.f]?.(e.target)});
+document.addEventListener('input',e=>{if(e.target.id==='q'){q=e.target.value;fill()}});
+addEventListener('hashchange',render);
+
+/* ---------- admin ---------- */
+const st=m=>{const e=$('#st');e?e.textContent=m:toast(m)};
+let dur=0,me=null,editing=null;
+const can=s=>me&&(me.role==='owner'||s.created_by===me.id);
+const fn=b=>sb.functions.invoke('manage-users',{body:b});
+async function admin(){
+  const m=$('#main');navPl();$$('nav [data-v]').forEach(b=>b.removeAttribute('aria-current'));
+  if(!sb)return m.innerHTML='<h1>Admin</h1>'+none('Add your Supabase URL and anon key at the top of index.html first.');
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session)return m.innerHTML=`<h1>Admin sign in</h1><form data-f="login"><label for="em">Email</label><input type="email" id="em" name="email" autocomplete="username" required><label for="pw">Password</label><input type="password" id="pw" name="password" autocomplete="current-password" required><div class="bar"><button class="btn pri">Sign in</button><button type="button" class="btn" data-act="pk">Sign in with passkey</button></div><p id="st" role="status" class="meta" style="margin-top:12px"></p></form>`;
+  const{data:ok}=await sb.from('admins').select('user_id,role').eq('user_id',session.user.id).maybeSingle();
+  if(!ok)return m.innerHTML=`<h1>Admin</h1>${none('You’re signed in, but this account can’t publish. Add its user id to the admins table in Supabase.')}<button class="btn" data-act="out">Sign out</button>`;
+  me={id:ok.user_id,role:ok.role};editing=null;dur=0;
+  m.innerHTML=`<h1 id="fh">Publish a song</h1><form data-f="pub" id="af">
+<label for="fi" id="fl">Audio file</label><input type="file" id="fi" name="file" accept="audio/*" required style="margin:4px 0 14px">
+<label for="ti">Title</label><input type="text" id="ti" name="title" required>
+<label for="ar">Artist</label><input type="text" id="ar" name="artist" required>
+<label for="al">Album</label><input type="text" id="al" name="album">
+<label for="de">Description</label><textarea id="de" name="description" rows="2"></textarea>
+<label for="co">Color</label><input type="color" id="co" name="color" value="#c2410c">
+<label for="ly2">Lyrics (LRC for synced, or plain text)</label><textarea id="ly2" name="lyrics" rows="8"></textarea>
+<div class="bar"><button type="button" class="btn" data-act="lrc">Find on LrcLib</button><label class="btn" for="lf" style="font-weight:400;cursor:pointer">Upload .lrc file</label><input type="file" id="lf" accept=".lrc,.txt" hidden></div>
+<div class="bar"><button class="btn pri" id="pb">Publish song</button><button type="button" class="btn" id="cx" data-act="cancel" hidden>Cancel</button></div><p id="st" role="status" class="meta" style="margin-top:12px"></p></form>
+<h2 style="margin:32px 0 8px">Published songs</h2>${songs.length?songs.map(s=>`<div class="row" style="grid-template-columns:10px 1fr auto"><i class="chip" style="background:${esc(s.color)}"></i><span>${esc(s.title)}<small style="display:block">${esc(s.artist)}</small></span>${can(s)?`<span class="ac"><button data-act="edit" data-s="${s.id}">Edit</button><button data-act="del" data-s="${s.id}">Delete</button></span>`:''}</div>`).join(''):none('Nothing published yet.')}${me.role==='owner'?`<h2 style="margin:32px 0 8px">People who can publish</h2><div id="ppl"></div><form data-f="adduser" style="margin-top:12px"><label for="ue">Email</label><input type="email" id="ue" name="email" autocomplete="off" required><label for="up">Password (at least 8 characters)</label><input type="password" id="up" name="password" autocomplete="new-password" minlength="8" required><button class="btn">Add person</button></form>`:''}<h2 style="margin:32px 0 8px">Passkeys</h2><div id="pks"></div><div class="bar" style="margin-top:12px"><button class="btn" data-act="pkadd">Add a passkey</button></div><div class="bar" style="margin-top:24px"><button data-act="out">Sign out</button></div>`;
+  pks();ppl();
+  $('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const n=f.name.replace(/\.[^.]+$/,'');if(!$('#ti').value)$('#ti').value=n;const x=new Audio(URL.createObjectURL(f));x.onloadedmetadata=()=>{dur=x.duration;URL.revokeObjectURL(x.src)}};
+  $('#lf').onchange=async e=>{const f=e.target.files[0];if(f){$('#ly2').value=await f.text();st('Lyrics loaded from '+f.name+'.')}};
+}
+async function findLrc(){
+  const f=$('#af'),t=f.title.value.trim(),ar=f.artist.value.trim();
+  if(!t||!ar)return st('Enter a title and artist first.');
+  st('Searching LrcLib…');
+  try{const p=new URLSearchParams({track_name:t,artist_name:ar});if(f.album.value.trim())p.set('album_name',f.album.value.trim());if(dur)p.set('duration',Math.round(dur));
+    const r=await fetch('https://lrclib.net/api/get?'+p);let d=r.ok?await r.json():null;
+    if(!d||!d.syncedLyrics){const s=await fetch('https://lrclib.net/api/search?'+new URLSearchParams({track_name:t,artist_name:ar})),L=s.ok?await s.json():[];d=L.find(x=>x.syncedLyrics)||L.find(x=>x.plainLyrics)||d}
+    const txt=d&&(d.syncedLyrics||d.plainLyrics);
+    if(!txt)return st('LrcLib has no lyrics for this song. Paste them or upload an .lrc file.');
+    f.lyrics.value=txt;st(d.syncedLyrics?'Found synced lyrics. Check the timing after publishing.':'Found lyrics without timing. They’ll show as plain text.')}
+  catch{st('Couldn’t reach LrcLib. Check your connection or upload an .lrc file.')}}
+async function publish(f){
+  const file=f.file.files[0];if(!file&&!editing)return st('Choose an audio file.');
+  const b=$('#pb');b.disabled=true;let path=editing?editing.audio_path:null;
+  if(file){st('Uploading audio…');path=crypto.randomUUID()+'.'+(file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g,'')||'mp3');
+    const up=await sb.storage.from('music').upload(path,file,{contentType:file.type||'audio/mpeg',cacheControl:'31536000'});
+    if(up.error){b.disabled=false;return st('Upload failed: '+up.error.message)}}
+  const row={title:f.title.value.trim(),artist:f.artist.value.trim(),album:f.album.value.trim()||null,description:f.description.value.trim()||null,color:f.color.value,lyrics:f.lyrics.value.trim()||null,audio_path:path,duration:dur||null};
+  st('Saving…');
+  const r=editing?await sb.from('songs').update(row).eq('id',editing.id).select():await sb.from('songs').insert(row).select();
+  if(r.error||!r.data||!r.data.length){if(file)await sb.storage.from('music').remove([path]);b.disabled=false;return st('Couldn’t save the song'+(r.error?': '+r.error.message:'. You can only edit songs you published.'))}
+  if(editing&&file)await sb.storage.from('music').remove([editing.audio_path]);
+  const was=editing;dur=0;await loadSongs();toast(was?`Saved “${row.title}”.`:`Published “${row.title}”.`);
+}
+
+/* ---------- start ---------- */
+$('#bp').innerHTML=ic('prev','Prev');$('#bn').innerHTML=ic('next','Next');$('#bl').innerHTML=ic('lyr','Lyrics');$('#lx').innerHTML=ic('x','Close');$('#bt').innerHTML=ic('play','Play','Filled');
+render();loadSongs();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+</script></body></html>
