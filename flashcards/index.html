@@ -1,0 +1,1290 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flashcards</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px 16px;
+  background: #fff;
+  color: #222;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+main {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin: 0 0 24px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+h3 {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+p {
+  line-height: 1.5;
+}
+
+button, input, textarea {
+  font: inherit;
+}
+
+button {
+  padding: 9px 12px;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  background: #fff;
+  color: #222;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #f5f5f5;
+}
+
+button:disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
+input[type="text"], textarea {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  background: #fff;
+  color: #222;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+label {
+  display: block;
+  margin-bottom: 7px;
+  font-weight: 600;
+}
+
+.muted {
+  color: #777;
+}
+
+.small {
+  font-size: 12px;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.item {
+  padding: 14px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.item:first-child {
+  border-top: 1px solid #ddd;
+}
+
+.item-title {
+  margin-bottom: 5px;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+.item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field small {
+  display: block;
+  margin-top: 6px;
+  color: #777;
+  font-weight: normal;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.card-box {
+  min-height: 220px;
+  padding: 24px 16px;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  cursor: pointer;
+}
+
+.card-text {
+  font-size: 20px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.card-image {
+  display: block;
+  max-width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+  margin: 0 auto 16px;
+}
+
+.study-info {
+  margin-bottom: 12px;
+  color: #777;
+}
+
+.hint-box {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.letter-reveal {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  font-size: 20px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.revealed-letter {
+  color: red;
+  font-weight: bold;
+}
+
+.hidden-letter {
+  color: #777;
+}
+
+.preview {
+  max-width: 220px;
+  max-height: 160px;
+  display: block;
+  margin-top: 10px;
+  object-fit: contain;
+}
+
+.danger {
+  color: #a11;
+}
+
+.footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.section {
+  margin-top: 24px;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 18px 12px;
+  }
+
+  .row {
+    align-items: flex-start;
+  }
+
+  .card-text {
+    font-size: 18px;
+  }
+
+  .card-box {
+    min-height: 190px;
+  }
+}
+</style>
+</head>
+
+<body>
+<main>
+  <h1>Flashcards</h1>
+
+  <!-- SET LIST -->
+  <section id="homeView">
+    <div class="toolbar">
+      <button id="newSetButton">+ New set</button>
+      <button id="exportButton">Export backup</button>
+      <button id="importButton">Import backup</button>
+      <input id="importFile" type="file" accept=".json,application/json" class="hidden">
+    </div>
+
+    <div id="newSetForm" class="hidden section">
+      <h3>Create a set</h3>
+      <div class="field">
+        <label for="newSetName">Set name</label>
+        <input id="newSetName" type="text" placeholder="e.g. Biology">
+      </div>
+      <div class="toolbar">
+        <button id="saveNewSetButton">Create set</button>
+        <button id="cancelNewSetButton">Cancel</button>
+      </div>
+    </div>
+
+    <div id="setList"></div>
+    <p id="emptySets" class="muted">No sets yet. Create a set to get started.</p>
+    <p id="storageMessage" class="muted small"></p>
+  </section>
+
+  <!-- SET DETAILS -->
+  <section id="setView" class="hidden">
+    <div class="toolbar">
+      <button id="backHomeButton">← All sets</button>
+    </div>
+
+    <h2 id="setTitle"></h2>
+    <p id="setCardCount" class="muted"></p>
+
+    <div class="toolbar">
+      <button id="addCardButton">+ Add card</button>
+      <button id="studyButton">Study shuffled</button>
+      <button id="renameSetButton">Rename set</button>
+      <button id="deleteSetButton" class="danger">Delete set</button>
+    </div>
+
+    <div id="cardList"></div>
+    <p id="emptyCards" class="muted">This set has no cards yet.</p>
+  </section>
+
+  <!-- CARD EDITOR -->
+  <section id="editorView" class="hidden">
+    <div class="toolbar">
+      <button id="cancelEditorButton">← Back</button>
+    </div>
+
+    <h2 id="editorTitle">Add card</h2>
+
+    <form id="cardForm">
+      <div class="field">
+        <label for="frontText">Front / Question</label>
+        <textarea id="frontText" required placeholder="Enter the question"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="frontImage">Front image (optional)</label>
+        <input id="frontImage" type="file" accept="image/*">
+        <img id="frontPreview" class="preview hidden" alt="Front image preview">
+        <button type="button" id="removeFrontImage" class="hidden">Remove image</button>
+      </div>
+
+      <div class="field">
+        <label for="backText">Back / Answer</label>
+        <textarea id="backText" required placeholder="Enter the answer"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="backImage">Back image (optional)</label>
+        <input id="backImage" type="file" accept="image/*">
+        <img id="backPreview" class="preview hidden" alt="Back image preview">
+        <button type="button" id="removeBackImage" class="hidden">Remove image</button>
+      </div>
+
+      <div class="field">
+        <label for="hintsText">Hints (optional)</label>
+        <textarea id="hintsText" placeholder="Enter one hint per line"></textarea>
+        <small>Hints appear one at a time during study.</small>
+      </div>
+
+      <div class="toolbar">
+        <button type="submit">Save card</button>
+        <button type="button" id="cancelEditorButton2">Cancel</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- STUDY -->
+  <section id="studyView" class="hidden">
+    <div class="toolbar">
+      <button id="exitStudyButton">← Exit study</button>
+    </div>
+
+    <h2 id="studySetTitle"></h2>
+    <p id="studyProgress" class="study-info"></p>
+
+    <div id="studyCard" class="card-box" tabindex="0" role="button"
+         aria-label="Flashcard. Click to reveal the answer.">
+      <div id="studyImage"></div>
+      <div id="studySideLabel" class="muted small"></div>
+      <div id="studyText" class="card-text"></div>
+    </div>
+
+    <div id="hintArea"></div>
+    <div id="letterRevealArea"></div>
+
+    <div class="footer-actions">
+      <button id="flipButton">Show answer</button>
+      <button id="hintButton">Show hint</button>
+      <button id="letterHintButton">Reveal letters</button>
+      <button id="nextButton">Next card</button>
+      <button id="finishButton">Finish study</button>
+    </div>
+
+    <p class="muted small">
+      Keyboard: Space to flip, H for a hint, and → for the next card.
+    </p>
+  </section>
+
+  <!-- STUDY SUMMARY -->
+  <section id="summaryView" class="hidden">
+    <h2>Study summary</h2>
+    <p id="summaryText"></p>
+    <div id="summaryList"></div>
+
+    <div class="footer-actions">
+      <button id="studyAgainButton">Study again</button>
+      <button id="summaryBackButton">Back to set</button>
+      <button id="summaryHomeButton">All sets</button>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const STORAGE_KEY = "simple-flashcards-sets-v1";
+  const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+
+  const $ = id => document.getElementById(id);
+
+  let sets = loadSets();
+  let currentSetId = null;
+  let editingCardId = null;
+
+  let frontImageData = "";
+  let backImageData = "";
+
+  let studyCards = [];
+  let studyIndex = 0;
+  let isFlipped = false;
+  let hintsShown = 0;
+  let sessionResults = [];
+  let sessionRecordedIds = new Set();
+
+  // Letter hint state
+  let revealedLetterPositions = new Set();
+  let letterRevealOrder = [];
+  let letterRevealLimit = 0;
+
+  function makeId() {
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+      return window.crypto.randomUUID();
+    }
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+  }
+
+  function loadSets() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return [];
+
+      const parsed = JSON.parse(saved);
+      if (!Array.isArray(parsed)) return [];
+
+      return parsed.filter(set =>
+        set &&
+        typeof set.id === "string" &&
+        typeof set.name === "string" &&
+        Array.isArray(set.cards)
+      ).map(set => ({
+        id: set.id,
+        name: set.name,
+        cards: set.cards.filter(card =>
+          card &&
+          typeof card.id === "string" &&
+          typeof card.front === "string" &&
+          typeof card.back === "string"
+        ).map(card => ({
+          id: card.id,
+          front: card.front,
+          back: card.back,
+          hints: Array.isArray(card.hints)
+            ? card.hints.filter(hint => typeof hint === "string")
+            : [],
+          frontImage: typeof card.frontImage === "string" ? card.frontImage : "",
+          backImage: typeof card.backImage === "string" ? card.backImage : ""
+        }))
+      }));
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveSets() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sets));
+      $("storageMessage").textContent = "";
+      return true;
+    } catch (error) {
+      $("storageMessage").textContent =
+        "Could not save. Storage may be full. Try smaller images or export a backup.";
+      return false;
+    }
+  }
+
+  function currentSet() {
+    return sets.find(set => set.id === currentSetId) || null;
+  }
+
+  function showView(viewId) {
+    [
+      "homeView",
+      "setView",
+      "editorView",
+      "studyView",
+      "summaryView"
+    ].forEach(id => {
+      $(id).classList.toggle("hidden", id !== viewId);
+    });
+  }
+
+  function makeButton(text, callback, className = "") {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = text;
+    if (className) button.className = className;
+    button.addEventListener("click", callback);
+    return button;
+  }
+
+  function renderHome() {
+    const list = $("setList");
+    list.replaceChildren();
+
+    $("emptySets").classList.toggle("hidden", sets.length > 0);
+
+    sets.forEach(set => {
+      const item = document.createElement("div");
+      item.className = "item";
+
+      const title = document.createElement("div");
+      title.className = "item-title";
+      title.textContent = set.name;
+
+      const count = document.createElement("div");
+      count.className = "muted small";
+      count.textContent =
+        set.cards.length + (set.cards.length === 1 ? " card" : " cards");
+
+      const actions = document.createElement("div");
+      actions.className = "item-actions";
+
+      actions.append(
+        makeButton("Open set", () => openSet(set.id)),
+        makeButton("Study", () => {
+          currentSetId = set.id;
+          startStudy();
+        }),
+        makeButton("Rename", () => renameSet(set.id)),
+        makeButton("Delete", () => deleteSet(set.id), "danger")
+      );
+
+      item.append(title, count, actions);
+      list.append(item);
+    });
+  }
+
+  function openSet(setId) {
+    currentSetId = setId;
+    renderSet();
+    showView("setView");
+  }
+
+  function renderSet() {
+    const set = currentSet();
+
+    if (!set) {
+      renderHome();
+      showView("homeView");
+      return;
+    }
+
+    $("setTitle").textContent = set.name;
+    $("setCardCount").textContent =
+      set.cards.length + (set.cards.length === 1 ? " card" : " cards");
+
+    $("emptyCards").classList.toggle("hidden", set.cards.length > 0);
+
+    const list = $("cardList");
+    list.replaceChildren();
+
+    set.cards.forEach((card, index) => {
+      const item = document.createElement("div");
+      item.className = "item";
+
+      const title = document.createElement("div");
+      title.className = "item-title";
+      title.textContent = (index + 1) + ". " + card.front;
+
+      const answer = document.createElement("div");
+      answer.className = "muted";
+      answer.textContent = "Answer: " + card.back;
+
+      const details = document.createElement("div");
+      details.className = "muted small";
+
+      const parts = [];
+      if (card.hints.length) parts.push(card.hints.length + " hints");
+      if (card.frontImage) parts.push("front image");
+      if (card.backImage) parts.push("back image");
+      details.textContent = parts.join(" · ");
+
+      const actions = document.createElement("div");
+      actions.className = "item-actions";
+      actions.append(
+        makeButton("Edit", () => openEditor(card.id)),
+        makeButton("Delete", () => deleteCard(card.id), "danger")
+      );
+
+      item.append(title, answer);
+      if (parts.length) item.append(details);
+      item.append(actions);
+      list.append(item);
+    });
+  }
+
+  $("newSetButton").addEventListener("click", () => {
+    $("newSetForm").classList.remove("hidden");
+    $("newSetName").value = "";
+    $("newSetName").focus();
+  });
+
+  $("cancelNewSetButton").addEventListener("click", () => {
+    $("newSetForm").classList.add("hidden");
+  });
+
+  $("saveNewSetButton").addEventListener("click", () => {
+    const name = $("newSetName").value.trim();
+
+    if (!name) {
+      alert("Enter a name for your set.");
+      return;
+    }
+
+    const set = { id: makeId(), name, cards: [] };
+    sets.push(set);
+    saveSets();
+
+    $("newSetForm").classList.add("hidden");
+    renderHome();
+    openSet(set.id);
+  });
+
+  $("newSetName").addEventListener("keydown", event => {
+    if (event.key === "Enter") $("saveNewSetButton").click();
+  });
+
+  function renameSet(setId) {
+    const set = sets.find(item => item.id === setId);
+    if (!set) return;
+
+    const name = prompt("Enter a new name for this set:", set.name);
+    if (name === null) return;
+
+    if (!name.trim()) {
+      alert("The set name cannot be empty.");
+      return;
+    }
+
+    set.name = name.trim();
+    saveSets();
+    renderHome();
+
+    if (currentSetId === setId) renderSet();
+  }
+
+  function deleteSet(setId) {
+    const set = sets.find(item => item.id === setId);
+    if (!set) return;
+
+    if (!confirm('Delete the set "' + set.name + '" and all its cards?')) {
+      return;
+    }
+
+    sets = sets.filter(item => item.id !== setId);
+    saveSets();
+
+    if (currentSetId === setId) currentSetId = null;
+
+    renderHome();
+    showView("homeView");
+  }
+
+  $("backHomeButton").addEventListener("click", () => {
+    renderHome();
+    showView("homeView");
+  });
+
+  $("renameSetButton").addEventListener("click", () => {
+    if (currentSetId) renameSet(currentSetId);
+  });
+
+  $("deleteSetButton").addEventListener("click", () => {
+    if (currentSetId) deleteSet(currentSetId);
+  });
+
+  $("addCardButton").addEventListener("click", () => openEditor(null));
+
+  function clearImagePreview(side) {
+    const preview = $(side + "Preview");
+    preview.removeAttribute("src");
+    preview.classList.add("hidden");
+
+    $("remove" + side[0].toUpperCase() + side.slice(1) + "Image")
+      .classList.add("hidden");
+  }
+
+  function setImagePreview(side, data) {
+    const preview = $(side + "Preview");
+    const removeButton =
+      $("remove" + side[0].toUpperCase() + side.slice(1) + "Image");
+
+    if (!data) {
+      clearImagePreview(side);
+      return;
+    }
+
+    preview.src = data;
+    preview.classList.remove("hidden");
+    removeButton.classList.remove("hidden");
+  }
+
+  function openEditor(cardId) {
+    const set = currentSet();
+    if (!set) return;
+
+    editingCardId = cardId;
+    frontImageData = "";
+    backImageData = "";
+
+    $("cardForm").reset();
+    clearImagePreview("front");
+    clearImagePreview("back");
+
+    const card = cardId
+      ? set.cards.find(item => item.id === cardId)
+      : null;
+
+    $("editorTitle").textContent = card ? "Edit card" : "Add card";
+
+    if (card) {
+      $("frontText").value = card.front;
+      $("backText").value = card.back;
+      $("hintsText").value = card.hints.join("\n");
+
+      frontImageData = card.frontImage || "";
+      backImageData = card.backImage || "";
+
+      setImagePreview("front", frontImageData);
+      setImagePreview("back", backImageData);
+    }
+
+    showView("editorView");
+    $("frontText").focus();
+  }
+
+  function deleteCard(cardId) {
+    const set = currentSet();
+    if (!set) return;
+
+    if (!set.cards.some(card => card.id === cardId)) return;
+    if (!confirm("Delete this card?")) return;
+
+    set.cards = set.cards.filter(card => card.id !== cardId);
+    saveSets();
+    renderSet();
+  }
+
+  function readImageFile(file, callback) {
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please choose an image file.");
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      alert("Please choose an image smaller than 2 MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => callback(String(reader.result));
+    reader.onerror = () => alert("Could not read this image.");
+    reader.readAsDataURL(file);
+  }
+
+  $("frontImage").addEventListener("change", event => {
+    readImageFile(event.target.files[0], data => {
+      frontImageData = data;
+      setImagePreview("front", data);
+    });
+  });
+
+  $("backImage").addEventListener("change", event => {
+    readImageFile(event.target.files[0], data => {
+      backImageData = data;
+      setImagePreview("back", data);
+    });
+  });
+
+  $("removeFrontImage").addEventListener("click", () => {
+    frontImageData = "";
+    $("frontImage").value = "";
+    clearImagePreview("front");
+  });
+
+  $("removeBackImage").addEventListener("click", () => {
+    backImageData = "";
+    $("backImage").value = "";
+    clearImagePreview("back");
+  });
+
+  function cancelEditor() {
+    renderSet();
+    showView("setView");
+  }
+
+  $("cancelEditorButton").addEventListener("click", cancelEditor);
+  $("cancelEditorButton2").addEventListener("click", cancelEditor);
+
+  $("cardForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const set = currentSet();
+    if (!set) return;
+
+    const front = $("frontText").value.trim();
+    const back = $("backText").value.trim();
+
+    if (!front || !back) {
+      alert("Enter both a question and an answer.");
+      return;
+    }
+
+    const hints = $("hintsText").value
+      .split("\n")
+      .map(hint => hint.trim())
+      .filter(Boolean);
+
+    if (editingCardId) {
+      const card = set.cards.find(item => item.id === editingCardId);
+      if (!card) return;
+
+      card.front = front;
+      card.back = back;
+      card.hints = hints;
+      card.frontImage = frontImageData;
+      card.backImage = backImageData;
+    } else {
+      set.cards.push({
+        id: makeId(),
+        front,
+        back,
+        hints,
+        frontImage: frontImageData,
+        backImage: backImageData
+      });
+    }
+
+    saveSets();
+    renderSet();
+    showView("setView");
+  });
+
+  // STUDY SESSION
+
+  $("studyButton").addEventListener("click", startStudy);
+
+  function shuffle(items) {
+    const result = items.slice();
+
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+
+    return result;
+  }
+
+  function startStudy() {
+    const set = currentSet();
+
+    if (!set || set.cards.length === 0) {
+      alert("Add at least one card before studying.");
+      return;
+    }
+
+    studyCards = shuffle(set.cards);
+    studyIndex = 0;
+    isFlipped = false;
+    hintsShown = 0;
+    sessionResults = [];
+    sessionRecordedIds = new Set();
+
+    $("studySetTitle").textContent = set.name;
+    renderStudyCard();
+    showView("studyView");
+  }
+
+  function activeStudyCard() {
+    return studyCards[studyIndex] || null;
+  }
+
+  function renderStudyCard() {
+    const card = activeStudyCard();
+
+    if (!card) {
+      finishStudy();
+      return;
+    }
+
+    isFlipped = false;
+    hintsShown = 0;
+
+    $("studyProgress").textContent =
+      "Card " + (studyIndex + 1) + " of " + studyCards.length;
+
+    $("studySideLabel").textContent = "QUESTION";
+    $("studyText").textContent = card.front;
+    $("studyImage").replaceChildren();
+
+    if (card.frontImage) {
+      const image = document.createElement("img");
+      image.src = card.frontImage;
+      image.alt = "Question image";
+      image.className = "card-image";
+      $("studyImage").append(image);
+    }
+
+    $("hintArea").replaceChildren();
+
+    // Reset the letter hints for every card.
+    prepareLetterHints(card.back);
+
+    $("flipButton").textContent = "Show answer";
+    $("hintButton").disabled = card.hints.length === 0;
+    $("hintButton").textContent =
+      card.hints.length ? "Show hint (0/" + card.hints.length + ")" : "No hints";
+
+    $("nextButton").textContent =
+      studyIndex === studyCards.length - 1 ? "Finish cards" : "Next card";
+  }
+
+  function flipCard() {
+    const card = activeStudyCard();
+    if (!card) return;
+
+    isFlipped = !isFlipped;
+
+    $("studySideLabel").textContent = isFlipped ? "ANSWER" : "QUESTION";
+    $("studyText").textContent = isFlipped ? card.back : card.front;
+    $("studyImage").replaceChildren();
+
+    const imageData = isFlipped ? card.backImage : card.frontImage;
+
+    if (imageData) {
+      const image = document.createElement("img");
+      image.src = imageData;
+      image.alt = isFlipped ? "Answer image" : "Question image";
+      image.className = "card-image";
+      $("studyImage").append(image);
+    }
+
+    $("flipButton").textContent = isFlipped ? "Show question" : "Show answer";
+  }
+
+  function showHint() {
+    const card = activeStudyCard();
+
+    if (!card || hintsShown >= card.hints.length) return;
+
+    hintsShown++;
+
+    const hint = document.createElement("div");
+    hint.className = "hint-box";
+    hint.textContent =
+      "Hint " + hintsShown + ": " + card.hints[hintsShown - 1];
+
+    $("hintArea").append(hint);
+
+    $("hintButton").textContent =
+      hintsShown < card.hints.length
+        ? "Show next hint (" + hintsShown + "/" + card.hints.length + ")"
+        : "All hints shown";
+
+    if (hintsShown >= card.hints.length) {
+      $("hintButton").disabled = true;
+    }
+  }
+
+  // LETTER HINTS
+
+  function prepareLetterHints(answer) {
+    const chars = Array.from(answer);
+    const positions = [];
+
+    // Count only letters and numbers. Spaces and punctuation remain visible.
+    chars.forEach((char, index) => {
+      if (/[\p{L}\p{N}]/u.test(char)) {
+        positions.push(index);
+      }
+    });
+
+    letterRevealOrder = [];
+
+    let left = 0;
+    let right = positions.length - 1;
+
+    // Order: first, second, last, third, second-last, and so on.
+    while (left <= right) {
+      letterRevealOrder.push(positions[left]);
+      left++;
+
+      if (left <= right) {
+        letterRevealOrder.push(positions[left]);
+        left++;
+      }
+
+      if (left <= right) {
+        letterRevealOrder.push(positions[right]);
+        right--;
+      }
+    }
+
+    letterRevealLimit = Math.ceil(positions.length * 0.8);
+    revealedLetterPositions = new Set();
+
+    renderLetterHints(answer);
+  }
+
+  function renderLetterHints(answer) {
+    const area = $("letterRevealArea");
+    area.replaceChildren();
+
+    const chars = Array.from(answer);
+    const box = document.createElement("div");
+    box.className = "letter-reveal";
+
+    chars.forEach((char, index) => {
+      const span = document.createElement("span");
+
+      if (!/[\p{L}\p{N}]/u.test(char)) {
+        span.textContent = char;
+      } else if (revealedLetterPositions.has(index)) {
+        span.textContent = char;
+        span.className = "revealed-letter";
+      } else {
+        span.textContent = "_";
+        span.className = "hidden-letter";
+      }
+
+      box.append(span);
+    });
+
+    area.append(box);
+
+    const shown = revealedLetterPositions.size;
+    const total = letterRevealOrder.length;
+    const finished = shown >= letterRevealLimit;
+
+    $("letterHintButton").disabled = finished;
+    $("letterHintButton").textContent = finished
+      ? "Reveal limit reached (" + shown + "/" + total + ")"
+      : "Reveal letters (" + shown + "/" + total + ")";
+  }
+
+  function revealNextLetter() {
+    const card = activeStudyCard();
+
+    if (!card || revealedLetterPositions.size >= letterRevealLimit) return;
+
+    const nextPosition = letterRevealOrder.find(
+      position => !revealedLetterPositions.has(position)
+    );
+
+    if (nextPosition === undefined) return;
+
+    revealedLetterPositions.add(nextPosition);
+    renderLetterHints(card.back);
+  }
+
+  function recordCurrentCard() {
+    const card = activeStudyCard();
+
+    if (!card || sessionRecordedIds.has(card.id)) return;
+
+    sessionRecordedIds.add(card.id);
+
+    sessionResults.push({
+      id: card.id,
+      front: card.front,
+      hintsUsed: hintsShown,
+      lettersRevealed: revealedLetterPositions.size,
+      revealedAnswer: isFlipped
+    });
+  }
+
+  function nextCard() {
+    recordCurrentCard();
+
+    if (studyIndex >= studyCards.length - 1) {
+      finishStudy();
+      return;
+    }
+
+    studyIndex++;
+    renderStudyCard();
+  }
+
+  function finishStudy() {
+    if (!studyCards.length) {
+      showView("setView");
+      return;
+    }
+
+    recordCurrentCard();
+
+    const totalHints = sessionResults.reduce(
+      (sum, result) => sum + result.hintsUsed, 0
+    );
+
+    const totalLetters = sessionResults.reduce(
+      (sum, result) => sum + result.lettersRevealed, 0
+    );
+
+    $("summaryText").textContent =
+      "Reviewed " + sessionResults.length + " of " + studyCards.length +
+      " cards. Hints revealed: " + totalHints +
+      ". Letters revealed: " + totalLetters + ".";
+
+    const list = $("summaryList");
+    list.replaceChildren();
+
+    sessionResults.forEach((result, index) => {
+      const item = document.createElement("div");
+      item.className = "item";
+
+      const title = document.createElement("div");
+      title.className = "item-title";
+      title.textContent = (index + 1) + ". " + result.front;
+
+      const detail = document.createElement("div");
+      detail.className = "muted small";
+      detail.textContent =
+        result.hintsUsed + (result.hintsUsed === 1 ? " hint" : " hints") +
+        " revealed · " +
+        result.lettersRevealed + " letters revealed · " +
+        (result.revealedAnswer ? "answer viewed" : "answer not viewed");
+
+      item.append(title, detail);
+      list.append(item);
+    });
+
+    showView("summaryView");
+  }
+
+  $("studyCard").addEventListener("click", flipCard);
+  $("flipButton").addEventListener("click", flipCard);
+  $("hintButton").addEventListener("click", showHint);
+  $("letterHintButton").addEventListener("click", revealNextLetter);
+  $("nextButton").addEventListener("click", nextCard);
+  $("finishButton").addEventListener("click", finishStudy);
+
+  $("exitStudyButton").addEventListener("click", () => {
+    if (confirm("Exit this study session? Your session summary will not be saved.")) {
+      renderSet();
+      showView("setView");
+    }
+  });
+
+  $("studyAgainButton").addEventListener("click", startStudy);
+
+  $("summaryBackButton").addEventListener("click", () => {
+    renderSet();
+    showView("setView");
+  });
+
+  $("summaryHomeButton").addEventListener("click", () => {
+    renderHome();
+    showView("homeView");
+  });
+
+  document.addEventListener("keydown", event => {
+    const editorVisible = !$("editorView").classList.contains("hidden");
+    const studyVisible = !$("studyView").classList.contains("hidden");
+
+    if (!studyVisible || editorVisible) return;
+
+    if (event.code === "Space") {
+      event.preventDefault();
+      flipCard();
+    } else if (event.key.toLowerCase() === "h") {
+      showHint();
+    } else if (event.key === "ArrowRight") {
+      nextCard();
+    }
+  });
+
+  // EXPORT BACKUP
+
+  $("exportButton").addEventListener("click", () => {
+    const data = JSON.stringify({
+      format: "simple-flashcards-backup",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      sets
+    }, null, 2);
+
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "flashcards-backup.json";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  // IMPORT BACKUP
+
+  $("importButton").addEventListener("click", () => {
+    $("importFile").click();
+  });
+
+  $("importFile").addEventListener("change", async event => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const importedSets = Array.isArray(parsed) ? parsed : parsed.sets;
+
+      if (!Array.isArray(importedSets)) {
+        throw new Error("The file does not contain a valid set list.");
+      }
+
+      const validSets = importedSets
+        .filter(set =>
+          set &&
+          typeof set.name === "string" &&
+          Array.isArray(set.cards)
+        )
+        .map(set => ({
+          id: makeId(),
+          name: set.name.trim() || "Imported set",
+          cards: set.cards
+            .filter(card =>
+              card &&
+              typeof card.front === "string" &&
+              typeof card.back === "string"
+            )
+            .map(card => ({
+              id: makeId(),
+              front: card.front,
+              back: card.back,
+              hints: Array.isArray(card.hints)
+                ? card.hints.filter(hint => typeof hint === "string")
+                : [],
+              frontImage:
+                typeof card.frontImage === "string" ? card.frontImage : "",
+              backImage:
+                typeof card.backImage === "string" ? card.backImage : ""
+            }))
+        }));
+
+      if (!validSets.length) {
+        throw new Error("No valid flashcard sets were found.");
+      }
+
+      if (!confirm(
+        "Import " + validSets.length +
+        " set(s)? These will be added to your existing sets."
+      )) {
+        return;
+      }
+
+      const previousSets = sets;
+      sets = [...sets, ...validSets];
+
+      if (!saveSets()) {
+        sets = previousSets;
+        saveSets();
+        alert("Import failed because browser storage may be full.");
+        return;
+      }
+
+      renderHome();
+      showView("homeView");
+      alert("Import complete.");
+    } catch (error) {
+      alert("Could not import this file: " + error.message);
+    } finally {
+      $("importFile").value = "";
+    }
+  });
+
+  renderHome();
+})();
+</script>
+</body>
+</html>
