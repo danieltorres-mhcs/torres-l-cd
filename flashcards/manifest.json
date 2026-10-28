@@ -1,0 +1,11 @@
+
+{
+  "name": "Flashcards",
+  "short_name": "Flashcards",
+  "description": "Study with your own flashcard sets, hints, and letter reveals.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff"
+}
