@@ -26,13 +26,28 @@ h2{font-size:18px;font-weight:600}
 .bar{display:flex;gap:8px;margin-bottom:16px}
 .bar button,.btn{border:1px solid var(--line);padding:8px 14px;border-radius:2px;justify-content:center}
 .btn.pri{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:600}
+.btn.pri:hover{background:#fff;border-color:#fff}
+label.btn:hover{background:#2a2b2f}
+button:disabled{opacity:.5;cursor:default}
 .row{display:grid;grid-template-columns:10px 1fr 1fr 48px auto;gap:16px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
 .chip{width:10px;height:36px;display:block}
 .t{flex-direction:column;align-items:flex-start;gap:0;width:100%}
 .row.on .t{font-weight:600}
 .ac{display:flex}
 input[type=text],input[type=email],input[type=password],input[type=search],textarea{width:100%;background:#232427;border:1px solid var(--line);border-radius:2px;padding:10px 12px;margin:4px 0 14px}
-input[type=color]{width:56px;height:36px;border:1px solid var(--line);background:none;padding:2px;margin:4px 0 14px;display:block}
+.btn{display:inline-flex;align-items:center;cursor:pointer}
+.pick{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0 14px}
+.pick .btn{min-height:44px}
+.vh{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.pick:has(.vh:focus-visible) .btn{outline:2px solid var(--fg);outline-offset:2px}
+#fn{min-width:0;overflow-wrap:anywhere}
+input[type=color]{-webkit-appearance:none;appearance:none;width:44px;height:44px;padding:0;margin:0;border:1px solid var(--line);border-radius:2px;background:none;cursor:pointer}
+input[type=color]::-webkit-color-swatch-wrapper{padding:3px}
+input[type=color]::-webkit-color-swatch{border:0;border-radius:1px}
+input[type=color]::-moz-color-swatch{border:0;border-radius:1px}
+#hx{width:112px;margin:0;font-variant-numeric:tabular-nums}
+.pre{width:28px;height:28px;padding:0;border:1px solid var(--line);border-radius:2px}
+.pre[aria-pressed=true]{outline:2px solid var(--fg);outline-offset:2px}
 label{display:block;font-weight:600;font-size:14px}
 form{max-width:560px}
 .none{color:var(--mut);max-width:48ch;padding:8px 0}
@@ -80,7 +95,7 @@ main{padding:20px 16px}.al{display:none}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.js"></script>
 <script>
 // 1. Paste your Supabase project URL and anon (public) key here.
-const CFG={url:'https://cxggfzruyfxmqnmmmraf.supabase.co',key:'sb_publishable_Wd3AdWQ_YSs2TzRSoHhECA_3_0PWfF3'};
+const CFG={url:'https://cxggfzruyfxmqnmmmraf.supabase.co',key:'https://cxggfzruyfxmqnmmmraf.supabase.co'};
 
 const $=(s,e=document)=>e.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -193,8 +208,9 @@ const act={
   del2:async({s})=>{const x=byId(s);$('#dlg').close();const{data:gone,error}=await sb.from('songs').delete().eq('id',s).select();if(error||!gone||!gone.length)return toast('Couldn’t delete the song. You can only delete songs you published.');await sb.storage.from('music').remove([x.audio_path]);await loadSongs();toast('Song deleted.')},
   lrc:findLrc,
   cancel:()=>admin(),
-  edit:({s})=>{const x=byId(s),f=$('#af');editing=x;dur=x.duration||0;f.title.value=x.title;f.artist.value=x.artist;f.album.value=x.album||'';f.description.value=x.description||'';f.color.value=x.color;f.lyrics.value=x.lyrics||'';f.file.required=false;f.file.value='';
-    $('#fh').textContent='Edit “'+x.title+'”';$('#fl').textContent='Replace audio file (optional)';$('#pb').textContent='Save changes';$('#cx').hidden=false;$('#main').scrollTop=0;st('')},
+  pre:({c})=>setColor(c),
+  edit:({s})=>{const x=byId(s),f=$('#af');editing=x;dur=x.duration||0;f.title.value=x.title;f.artist.value=x.artist;f.album.value=x.album||'';f.description.value=x.description||'';setColor(x.color);f.lyrics.value=x.lyrics||'';f.file.required=false;f.file.value='';
+    $('#fh').textContent='Edit “'+x.title+'”';$('#fl').textContent='Replace audio file (optional)';$('#pb').textContent='Save changes';$('#cx').hidden=false;$('#fn').textContent='Keeping the current audio file';$('#main').scrollTop=0;st('')},
   rmuser:({id,e})=>dlg(`<h2>Remove ${esc(e)}?</h2><p class="meta">Their account is deleted and they can no longer publish or edit. Songs they published stay in the library.</p><div class="bar"><button class="btn pri" data-act="rmuser2" data-id="${id}">Remove person</button><button class="btn" data-act="close">Keep person</button></div>`),
   rmuser2:async({id})=>{$('#dlg').close();const{data,error}=await fn({action:'delete',user_id:id});if(error||data?.error)return toast('Couldn’t remove them: '+(data?.error||error.message));toast('Person removed.');ppl()},
   out:async()=>{await sb.auth.signOut();admin()},
@@ -222,6 +238,8 @@ addEventListener('hashchange',render);
 /* ---------- admin ---------- */
 const st=m=>{const e=$('#st');e?e.textContent=m:toast(m)};
 let dur=0,me=null,editing=null;
+const PRE=['#c2410c','#b45309','#4d7c0f','#0f766e','#1d4ed8','#6d28d9','#be185d','#475569'];
+function setColor(v,keepHex){const c=$('#co');if(!c)return;c.value=v;if(!keepHex)$('#hx').value=v;$$('.pre').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===v.toLowerCase()))}
 const can=s=>me&&(me.role==='owner'||s.created_by===me.id);
 const fn=b=>sb.functions.invoke('manage-users',{body:b});
 async function admin(){
@@ -233,18 +251,20 @@ async function admin(){
   if(!ok)return m.innerHTML=`<h1>Admin</h1>${none('You’re signed in, but this account can’t publish. Add its user id to the admins table in Supabase.')}<button class="btn" data-act="out">Sign out</button>`;
   me={id:ok.user_id,role:ok.role};editing=null;dur=0;
   m.innerHTML=`<h1 id="fh">Publish a song</h1><form data-f="pub" id="af">
-<label for="fi" id="fl">Audio file</label><input type="file" id="fi" name="file" accept="audio/*" required style="margin:4px 0 14px">
+<label for="fi" id="fl">Audio file</label><div class="pick"><label class="btn pri" for="fi">Choose audio file</label><span id="fn" class="meta">No file chosen</span><input class="vh" type="file" id="fi" name="file" accept="audio/*" required></div>
 <label for="ti">Title</label><input type="text" id="ti" name="title" required>
 <label for="ar">Artist</label><input type="text" id="ar" name="artist" required>
 <label for="al">Album</label><input type="text" id="al" name="album">
 <label for="de">Description</label><textarea id="de" name="description" rows="2"></textarea>
-<label for="co">Color</label><input type="color" id="co" name="color" value="#c2410c">
+<label for="co">Color</label><div class="pick"><input type="color" id="co" name="color" value="#c2410c" aria-label="Pick a color"><input type="text" id="hx" value="#c2410c" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Hex color"></div><div class="pick" role="group" aria-label="Preset colors" style="margin-top:-6px">${PRE.map(c=>`<button type="button" class="pre" data-act="pre" data-c="${c}" style="background:${c}" aria-label="Use ${c}" aria-pressed="${c==='#c2410c'}"></button>`).join('')}</div>
 <label for="ly2">Lyrics (LRC for synced, or plain text)</label><textarea id="ly2" name="lyrics" rows="8"></textarea>
 <div class="bar"><button type="button" class="btn" data-act="lrc">Find on LrcLib</button><label class="btn" for="lf" style="font-weight:400;cursor:pointer">Upload .lrc file</label><input type="file" id="lf" accept=".lrc,.txt" hidden></div>
 <div class="bar"><button class="btn pri" id="pb">Publish song</button><button type="button" class="btn" id="cx" data-act="cancel" hidden>Cancel</button></div><p id="st" role="status" class="meta" style="margin-top:12px"></p></form>
 <h2 style="margin:32px 0 8px">Published songs</h2>${songs.length?songs.map(s=>`<div class="row" style="grid-template-columns:10px 1fr auto"><i class="chip" style="background:${esc(s.color)}"></i><span>${esc(s.title)}<small style="display:block">${esc(s.artist)}</small></span>${can(s)?`<span class="ac"><button data-act="edit" data-s="${s.id}">Edit</button><button data-act="del" data-s="${s.id}">Delete</button></span>`:''}</div>`).join(''):none('Nothing published yet.')}${me.role==='owner'?`<h2 style="margin:32px 0 8px">People who can publish</h2><div id="ppl"></div><form data-f="adduser" style="margin-top:12px"><label for="ue">Email</label><input type="email" id="ue" name="email" autocomplete="off" required><label for="up">Password (at least 8 characters)</label><input type="password" id="up" name="password" autocomplete="new-password" minlength="8" required><button class="btn">Add person</button></form>`:''}<h2 style="margin:32px 0 8px">Passkeys</h2><div id="pks"></div><div class="bar" style="margin-top:12px"><button class="btn" data-act="pkadd">Add a passkey</button></div><div class="bar" style="margin-top:24px"><button data-act="out">Sign out</button></div>`;
   pks();ppl();
-  $('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const n=f.name.replace(/\.[^.]+$/,'');if(!$('#ti').value)$('#ti').value=n;const x=new Audio(URL.createObjectURL(f));x.onloadedmetadata=()=>{dur=x.duration;URL.revokeObjectURL(x.src)}};
+  $('#co').oninput=e=>setColor(e.target.value);
+  $('#hx').oninput=e=>{let v=e.target.value.trim();if(v[0]!=='#')v='#'+v;if(/^#[0-9a-f]{6}$/i.test(v))setColor(v.toLowerCase(),true)};
+  $('#fi').onchange=e=>{const f=e.target.files[0];$('#fn').textContent=f?f.name:(editing?'Keeping the current audio file':'No file chosen');if(!f)return;const n=f.name.replace(/\.[^.]+$/,'');if(!$('#ti').value)$('#ti').value=n;const x=new Audio(URL.createObjectURL(f));x.onloadedmetadata=()=>{dur=x.duration;URL.revokeObjectURL(x.src)}};
   $('#lf').onchange=async e=>{const f=e.target.files[0];if(f){$('#ly2').value=await f.text();st('Lyrics loaded from '+f.name+'.')}};
 }
 async function findLrc(){
